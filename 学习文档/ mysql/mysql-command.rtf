@@ -1,0 +1,11 @@
+mysql_install_db -basedir=/usr/local/mysql datadir=/data1/mysql_3308/data user-name =mysql
+
+
+mysql -uroot -P2016 --socket='/home/data/mysql_root/mysql/data2016/mysql.socket'
+
+grant all privileges on *.* to root@'%' identified by 'root';
+flush privileges;
+
+set password for 'root'@'%'=password('163.com');
+flush privileges;
+

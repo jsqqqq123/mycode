@@ -1,0 +1,40 @@
+celery 学习笔记
+
+rabbitmq 作为一个broker 是生产环境中的优先选择。
+
+install -y install rabbitmq-server
+
+
+配置文件应该写在 celeryconfig.py 文件中 （文件名可以更换）
+
+from celery import Celery
+app = Celery()
+app.config_from_object('celeryconfig')
+
+采用这样的方式，将config module给加载到celery app中来 
+
+celeryconfig.py 文件类似如下：
+
+#coding=utf-8
+
+BROKER_URL = 'redis://localhost//'
+CELERY_RESULT_BACKEND = 'redis://localhost/1/'
+
+CELERY_IMPORTS = ('task',)
+
+CELERY_ROUTES = {'task.get_ip':{'queue':'getip'},
+                 'task.get_list':{'queue':'getlist'},
+                 #'task.add':{'queue':'getip'}
+                 }
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+ENABLE_UTC = True
+
+＃这个根据实际情况改
+TIMEZONE = 'Europe/London'   
+
+你可以用 python -m celeryconfig 来验证你的配置文件是否有语法错误
+
+from celery.excute import apply_async, send_task   这两个函数的出处别弄错了

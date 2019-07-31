@@ -1,0 +1,218 @@
+{\rtf1\ansi\ansicpg936\cocoartf1344\cocoasubrtf720
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset134 STHeitiSC-Light;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww18420\viewh8340\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 openstack 
+\f1 \'b0\'b2\'d7\'b0\'b1\'ca\'bc\'c7\'a3\'ba
+\f0 \
+\
+
+\f1 \'b0\'b2\'d7\'b0\'cd\'eaubantu\'cf\'b5\'cd\'b3
+\f0  
+\f1 \'a3\'ba
+\f0 \
+sudo apt-get update\
+sudo apt-get upgrade\
+\
+
+\f1 \'b0\'b2\'d7\'b0\'cd\'f8\'c7\'c5\'b9\'a4\'be\'df bridge-utils:\
+sudo apt-get install bridge-utils\
+\
+\
+\
+ sudo mysql -uroot -pmygreatsecret -e 'CREATE DATABASE nova;' \
+ sudo mysql -uroot -pmygreatsecret -e 'CREATE USER novadbadmin;' \
+ sudo mysql -uroot -pmygreatsecret -e "GRANT ALL PRIVILEGES ON nova.* TO 'novadbadmin'@'%';" \
+\
+\
+\
+root@dream2:~# keystone tenant-create --name admin  \
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |                                  |\
+|   enabled   |               True               |\
+|      id     | 6679e9c95f9f497c966a74924d6ffbc1 |\
+|     name    |              admin               |\
++-------------+----------------------------------+\
+root@dream2:~# keystone tenant-create --name service\
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |                                  |\
+|   enabled   |               True               |\
+|      id     | 733f941b41bc46b5a653ae7681ccdf91 |\
+|     name    |             service              |\
++-------------+----------------------------------+\
+\
+root@dream2:~# keystone user-create --name admin --pass admin --email admin@thedream.cc\
++----------+----------------------------------+\
+| Property |              Value               |\
++----------+----------------------------------+\
+|  email   |        admin@thedream.cc         |\
+| enabled  |               True               |\
+|    id    | 2014fae3a5e645ffab31cc9cc9423455 |\
+|   name   |              admin               |\
+| username |              admin               |\
++----------+----------------------------------+\
+root@dream2:~# keystone user-create --name nova --pass nova --email nova@thedream.cc            \
++----------+----------------------------------+\
+| Property |              Value               |\
++----------+----------------------------------+\
+|  email   |         nova@thedream.cc         |\
+| enabled  |               True               |\
+|    id    | cc10e7baabec425886405ed660c5ecdf |\
+|   name   |               nova               |\
+| username |               nova               |\
++----------+----------------------------------+\
+root@dream2:~# keystone user-create --name glance --pass glance --email glance@thedream.cc         \
++----------+----------------------------------+\
+| Property |              Value               |\
++----------+----------------------------------+\
+|  email   |        glance@thedream.cc        |\
+| enabled  |               True               |\
+|    id    | d29945f08fa44cd99ae0b505d5564bb4 |\
+|   name   |              glance              |\
+| username |              glance              |\
++----------+----------------------------------+\
+root@dream2:~# keystone user-create --name swift --pass swift --email swift@thedream.cc               \
++----------+----------------------------------+\
+| Property |              Value               |\
++----------+----------------------------------+\
+|  email   |        swift@thedream.cc         |\
+| enabled  |               True               |\
+|    id    | f2f1caa3340c4051bd4b2c87c60e6f2a |\
+|   name   |              swift               |\
+| username |              swift               |\
++----------+----------------------------------+\
+\
+root@dream2:~# keystone role-create --name admin\
++----------+----------------------------------+\
+| Property |              Value               |\
++----------+----------------------------------+\
+|    id    | 07a97bfaa9cb4d36b1d9f1270ea24153 |\
+|   name   |              admin               |\
++----------+----------------------------------+\
+root@dream2:~# keystone role-create --name Member\
++----------+----------------------------------+\
+| Property |              Value               |\
++----------+----------------------------------+\
+|    id    | e93d3707e7ac4d798c2b8033b8ee772a |\
+|   name   |              Member              |\
++----------+----------------------------------+\
+\
+root@dream2:~# keystone tenant-list\
++----------------------------------+---------+---------+\
+|                id                |   name  | enabled |\
++----------------------------------+---------+---------+\
+| 6679e9c95f9f497c966a74924d6ffbc1 |  admin  |   True  |\
+| 733f941b41bc46b5a653ae7681ccdf91 | service |   True  |\
++----------------------------------+---------+---------+\
+root@dream2:~# keystone user-list  \
++----------------------------------+--------+---------+--------------------+\
+|                id                |  name  | enabled |       email        |\
++----------------------------------+--------+---------+--------------------+\
+| 2014fae3a5e645ffab31cc9cc9423455 | admin  |   True  | admin@thedream.cc  |\
+| d29945f08fa44cd99ae0b505d5564bb4 | glance |   True  | glance@thedream.cc |\
+| cc10e7baabec425886405ed660c5ecdf |  nova  |   True  |  nova@thedream.cc  |\
+| f2f1caa3340c4051bd4b2c87c60e6f2a | swift  |   True  | swift@thedream.cc  |\
++----------------------------------+--------+---------+--------------------+\
+root@dream2:~# keystone role-list\
++----------------------------------+----------+\
+|                id                |   name   |\
++----------------------------------+----------+\
+| e93d3707e7ac4d798c2b8033b8ee772a |  Member  |\
+| 9fe2ff9ee4384b1894a90878d3e92bab | _member_ |\
+| 07a97bfaa9cb4d36b1d9f1270ea24153 |  admin   |\
++----------------------------------+----------+\
+\
+\
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |    OpenStack Compute Service     |\
+|   enabled   |               True               |\
+|      id     | fb74f50b17ba42aaa711df56aa67a2aa |\
+|     name    |               nova               |\
+|     type    |             compute              |\
++-------------+----------------------------------+\
+root@dream2:~# keystone service-create --name volume --type volume --description 'OpenStack Volume Service'             \
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |     OpenStack Volume Service     |\
+|   enabled   |               True               |\
+|      id     | 41e8722c551f4eada828f8ad28a54a0a |\
+|     name    |              volume              |\
+|     type    |              volume              |\
++-------------+----------------------------------+\
+root@dream2:~# keystone service-create --name glance --type image --description 'OpenStack Image Service'             \
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |     OpenStack Image Service      |\
+|   enabled   |               True               |\
+|      id     | c0e5ee04eb6f4024ac6436c58df64845 |\
+|     name    |              glance              |\
+|     type    |              image               |\
++-------------+----------------------------------+\
+root@dream2:~# keystone service-create --name swift --type object-store --description 'OpenStack Storage Service'           \
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |    OpenStack Storage Service     |\
+|   enabled   |               True               |\
+|      id     | 0213be4d25c649c4961e4e23c327980d |\
+|     name    |              swift               |\
+|     type    |           object-store           |\
++-------------+----------------------------------+\
+root@dream2:~# keystone service-create --name keystone --type identity --description 'OpenStack Identity Service'                 \
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |    OpenStack Identity Service    |\
+|   enabled   |               True               |\
+|      id     | 8aab891d0d7d45c3bf180efe2100ce19 |\
+|     name    |             keystone             |\
+|     type    |             identity             |\
++-------------+----------------------------------+\
+root@dream2:~# keystone service-create --name ec2 --type ec2 --description 'EC2 Service'                                   \
++-------------+----------------------------------+\
+|   Property  |              Value               |\
++-------------+----------------------------------+\
+| description |           EC2 Service            |\
+|   enabled   |               True               |\
+|      id     | ffcb24b7b784499d9a6b7a045b6a6a06 |\
+|     name    |               ec2                |\
+|     type    |               ec2                |\
++-------------+----------------------------------+\
+\
+\
+\
+root@dream2:~# keystone service-list\
++----------------------------------+----------+--------------+----------------------------+\
+|                id                |   name   |     type     |        description         |\
++----------------------------------+----------+--------------+----------------------------+\
+| ffcb24b7b784499d9a6b7a045b6a6a06 |   ec2    |     ec2      |        EC2 Service         |\
+| c0e5ee04eb6f4024ac6436c58df64845 |  glance  |    image     |  OpenStack Image Service   |\
+| 8aab891d0d7d45c3bf180efe2100ce19 | keystone |   identity   | OpenStack Identity Service |\
+| fb74f50b17ba42aaa711df56aa67a2aa |   nova   |   compute    | OpenStack Compute Service  |\
+| 0213be4d25c649c4961e4e23c327980d |  swift   | object-store | OpenStack Storage Service  |\
+| 41e8722c551f4eada828f8ad28a54a0a |  volume  |    volume    |  OpenStack Volume Service  |\
++----------------------------------+----------+--------------+----------------------------+\
+\
+\
+\
+root@dream2:~# sudo glance-manage db_version_control 0\
+root@dream2:~# sudo glance-manage db_sync\
+\
+\
+export SERVICE_TOKEN=admin\
+export OS_TENANT_NAME=admin\
+export OS_USERNAME=admin\
+export OS_PASSWORD=admin\
+export OS_AUTH_URL="http://localhost:5000/v2.0/"\
+export SERVICE_ENDPOINT=http://localhost:35357/v2.0\
+}

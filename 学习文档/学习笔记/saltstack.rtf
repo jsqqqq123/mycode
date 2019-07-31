@@ -1,0 +1,201 @@
+{\rtf1\ansi\ansicpg936\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fnil\fcharset134 STHeitiSC-Light;\f1\froman\fcharset0 Times-Roman;\f2\fnil\fcharset134 STSong;
+\f3\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red217\green11\blue0;\red255\green39\blue18;\red14\green0\blue45;
+}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid1\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid101\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww18020\viewh12860\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs28 \cf0 \
+
+\fs36 \cf2 1. centos install  salt\'a3\'ba
+\fs28 \cf0 \
+\
+1.	
+\f1 wget -c http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f2 \cf0 	\'c8\'bb\'ba\'f3
+\f1  
+\f2 rpm
+\f1  
+\f2 -ivh \'b0\'b2\'d7\'b0
+\f1 \
+\
+2.	yum -y install salt-master\
+3.	--
+\f0 \'b2\'bb\'d2\'aa
+\f2 \'d4\'da\'c8\'ce\'d2\'e2\'b5\'d8\'b7\'bd\'d3\'c3salt-master start   \'b7\'fe\'ce\'f1\'bb\'e1\'d2\'bb\'d6\'b1\'bf\'a8\'d7\'c5\
+4.	yum
+\f1  -y install salt-minion\'a0   
+\f2 \'a3\'ad\'a3\'ad\'b0\'b2\'d7\'b0
+\f1  
+\f2 Minion\'b6\'cb
+\f1  \
+\
+
+\f2 5. 	\'b7\'fe\'ce\'f1\'c8\'cf\'d6\'a4\'a3\'ba
+\f1 \
+\
+\pard\pardeftab720\sa240
+\cf0 Master
+\f2 \'c5\'e4\'d6\'c3\'b5\'d8\'d6\'b7\'a3\'ba
+\f1 /etc/salt/master\
+Minion
+\f2 \'c5\'e4\'d6\'c3\'b5\'d8\'d6\'b7\'a3\'ba
+\f1 /etc/salt/minion\
+
+\f2 \'d0\'de\'b8\'c4
+\f1 minion
+\f2 \'ce\'c4\'bc\'fe\'a3\'ba
+\f1 \
+master:master
+\f2 \'b7\'fe\'ce\'f1\'c6\'f7\'b5\'c4
+\f1 IP
+\f2 \'bb\'f2\'d5\'df\'ca\'c7\'d6\'f7\'bb\'fa\'c3\'fb
+\f1 \
+
+\f2 \'d6\'d8\'c6\'f4
+\f1 minion
+\f2 \'b7\'fe\'ce\'f1  /etc/init.d/salt-minion restart\
+\'b2\'e9\'bf\'b4 master\'ca\'c7\'b7\'f1\'d3\'d0\'ce\'b4\'cd\'a8\'b9\'fd\'b5\'c4key\'c8\'cf\'d6\'a4\
+salt-key -L    \'d4\'damaster\'c9\'cf\'b2\'d9\'d7\'f7 \
+\'bd\'e1\'b9\'fb\'c8\'e7\'cf\'c2\'a3\'ba
+\f1 \
+\pard\pardeftab720
+
+\f3 \cf0 Accepted Keys:\
+Unaccepted Keys:\
+eric.wt #
+\f0 \'d5\'e2\'c0\'ef
+\f3 eric.wt
+\f0 \'d5\'e2\'cc\'a8\'b7\'fe\'ce\'f1\'c6\'f7
+\f3 key
+\f0 \'ce\'b4\'c8\'cf\'d6\'a4\'cd\'a8\'b9\'fd
+\f3 \
+Rejected Keys:\
+\pard\pardeftab720\sa240
+
+\f2 \cf0 \'bd\'f8\'d0\'d0\'c8\'cf\'d6\'a4\'b2\'d9\'d7\'f7
+\f1 \
+\pard\pardeftab720
+\cf0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720
+\ls1\ilvl0\cf0 1.salt-key\'a0-a\'a0eric.wt\'a0#
+\f2 \'cd\'a8\'b9\'fd
+\f1 eric.wt
+\f2 \'b7\'fe\'ce\'f1\'c6\'f7\'b5\'c4\'c8\'cf\'d6\'a4
+\f1 \'a0\'a0\
+\pard\pardeftab720\sa240
+
+\f2 \cf0 \'d4\'d9\'b4\'ce\'b2\'e9\'d1\'af\'a3\'a8
+\f1 salt-key -L
+\f2 \'a3\'a9\'a3\'ac\'bd\'e1\'b9\'fb\'c8\'e7\'cf\'c2\'a3\'ba
+\f1 \
+\pard\pardeftab720
+
+\f3 \cf0 Accepted Keys:\
+eric.wt\
+Unaccepted Keys:\
+\pard\pardeftab720\sa240
+
+\f1 \cf0 Rejected Keys:\
+
+\f2 \'b1\'ed\'c3\'f7\'d2\'d1\'be\'ad\'cd\'a8\'b9\'fd\'c8\'cf\'d6\'a4\'a3\'ac\'cf\'d6\'d4\'da\'bf\'c9\'d2\'d4\'d6\'b1\'bd\'d3\'d4\'da
+\f1 master
+\f2 \'c9\'cf\'c3\'e6\'bd\'f8\'d0\'d0
+\f1 minion
+\f2 \'b7\'fe\'ce\'f1\'c6\'f7\'b5\'c4\'b2\'d9\'d7\'f7\
+\pard\pardeftab720\sa240
+\cf3 \'d7\'a2\'d2\'e2\'a3\'ba \'c5\'e4\'d6\'c3\'ce\'c4\'bc\'fe \'c3\'b0\'ba\'c5\'ba\'f3\'c3\'e6\'d2\'aa\'bc\'d3\'bf\'d5\'b8\'f1\'a3\'ac \'b6\'f8\'d2\'bb\'d0\'d0\'b5\'c3\'d0\'d0\'ca\'d7\'d4\'f2\'b2\'bb\'d2\'aa\'d3\'d0\'bf\'d5\'b8\'f1
+\f1 \cf0 \
+\pard\pardeftab720
+\cf0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720
+\ls2\ilvl0\cf0 {\listtext	1.	}salt\'a0\'93minion-host\'94\'a0cmd.run\'a0\'93command\'94\'a0\'a0\
+{\listtext	2.	}#\'a0minion-host
+\f2 \'b1\'a3\'d6\'a4\'ba\'cd
+\f1 key
+\f2 \'b5\'c4\'b1\'a3\'c1\'f4\'c3\'fb\'d7\'d6\'d2\'bb\'d6\'b1\'a3\'ac\'d2\'bb\'b0\'e3\'b6\'bc\'ca\'c7\'d6\'f7\'bb\'fa\'c3\'fb\'c0\'b4\'c7\'f8\'b1\'f0\'a1\'a3
+\f1  \'a0\'a0\
+{\listtext	3.	}#\'a0command
+\f2 \'be\'cd\'ca\'c7\'c4\'e3\'d0\'e8\'d2\'aa\'d6\'b4\'d0\'d0\'b5\'c4\'d6\'b8\'c1\'ee
+\f1 \'a0\'a0\
+\pard\pardeftab720\sa240
+\cf0 \
+\pard\pardeftab720\sa240
+
+\fs36 \cf3 2. 
+\f2 \'bb\'f9\'b1\'be\'ca\'b9\'d3\'c3\'c3\'fc\'c1\'ee
+\f1\fs28 \cf0 \
+\pard\pardeftab720\sa240
+
+\f2 \cf0 \'b5\'f7\'d5\'fb
+\f1  
+\f2 pillar\'ca\'fd\'be\'dd\'ba\'f3\'a3\'ac\'b1\'d8\'d0\'eb\'ca\'b9\'d3\'c3\'d2\'d4\'cf\'c2\'c3\'fc\'c1\'ee\'c0\'b4\'cb\'a2\'d0\'c2 pillar\
+\pard\pardeftab720
+
+\f3 \cf3 salt '*' saltutil.refresh_pillar\cf0 \
+\
+\pard\pardeftab720
+
+\f0 \cf0 \'c8\'c3\'bf\'cd\'bb\'a7\'b6\'cb\'d7\'d4\'b6\'af\'d6\'b4\'d0\'d0 salt '*' state.highstate\'b5\'c3\'c5\'e4\'d6\'c3 pillar\
+\
+\pard\pardeftab720
+
+\f3 \cf3 #cat /srv/pillar/top.sls \
+base:\
+  "*":\
+    - schedule\
+#cat /srv/pillar/schedule.sls\
+schedule:\
+  highstate:\
+  function: state.highstate\
+  minutes: 30\cf0 \
+\
+\pard\pardeftab720
+
+\f0 \cf0 \'d2\'d4\'c9\'cf
+\f3  
+\f0 top.sls  \'d6\'d0\'b5\'c3 schedule\'bf\'c9\'d2\'d4\'b8\'fc\'b8\'c4\'ce\'aa\'ca\'b5\'bc\'ca\'b5\'c3\'c4\'bf\'c2\'bc     \
+\
+\'d2\'bb\'b0\'e3\'c7\'e9\'bf\'f6\'cf\'c2\'a3\'ac\'ce\'d2\'c3\'c7\'b6\'bc\'bb\'e1\'ce\'aa\'bf\'cd\'bb\'a7\'b6\'cb\'bc\'d3\'c9\'cf minion.sls \'d5\'e2\'d1\'f9\'b5\'c3\'c5\'e4\'d6\'c3\'ce\'c4\'bc\'fe \'be\'df\'cc\'e5\'c5\'e4\'d6\'c3\'c8\'e7\'cf\'c2 \'a3\'ba\
+\
+\'c5\'e4\'d6\'c3\'ce\'c4\'bc\'fe\'c2\'b7\'be\'b6\'ce\'aa\'a3\'ba\
+/srv/salt/_salt/states/minion.sls    ---\'c2\'b7\'be\'b6\'d2\'b2\'bf\'c9\'d2\'d4\'b8\'fc\'b8\'c4\
+\
+\pard\pardeftab720
+\cf3 salt-minion:\
+  pkg:\
+    - installed\
+  service.running:\
+    - require:\
+      - file: /etc/salt/minion\
+      - pkg: salt-minion\
+    - names:\
+      - salt-minion\
+    - watch:\
+      - file: /etc/salt/minion\
+\
+/etc/salt/minion:\
+  file.managed:\
+    - source: salt://_salt/templates/minion\
+    - template: jinja\
+    - user: root\
+    - group: root\
+    - mode: 644\
+    - require:\
+      - pkg: salt-minion\
+\
+\cf4 \'d3\'c3\'d3\'da\'c8\'b7\'b1\'a3minion\'b5\'c3\'c5\'e4\'d6\'c3\'ca\'c7\'d5\'fd\'c8\'b7\'b5\'c3\'a3\'ac\'c7\'d2\'b8\'fc\'b8\'c4\'ba\'f3\'d2\'b2\'c4\'dc\'b9\'bb\'c1\'a2\'bf\'cc\'b8\'fc\'d0\'c2\cf3 \
+\
+\cf4 \'c8\'e7\'b9\'fb\'c4\'e3\'b1\'e0\'d0\'b4\'c1\'cb\'d0\'c2\'b5\'c3 grains \'c4\'a3\'bf\'e9\'a3\'ac \'b7\'c5\'d4\'da\'c1\'cb _grains \'ce\'c4\'bc\'fe\'bc\'d0\'cf\'c2\'a3\'ac\'c4\'c7\'c3\'b4 \'c4\'e3\'cf\'eb\'d2\'aa\'cb\'fc\'c9\'fa\'d0\'a7 \'d0\'e8\'d2\'aa\'ca\'b9\'d3\'c3\'d2\'d4\'cf\'c2\'b5\'c3\'c3\'fc\'c1\'ee\cf3 \
+\
+1.	salt '*' saltutil.syn_all    \'cd\'ac\'b2\'bdgrains\'c4\'a3\'bf\'e9\
+\
+2.	salt '*' sys.reload_modules    \'cb\'a2\'d0\'c2\'c4\'a3\'bf\'e9\
+\
+3.	salt '*' grains.item max_open_file       \'b2\'e2\'ca\'d4\'cf\'c2 \'d5\'e2\'b8\'f6\'d4\'da\'b6\'a8\'d2\'e5\'b5\'c3 max_open_file  \'d7\'d6\'b5\'e4\'ca\'c7\'b7\'f1\'c9\'fa\'d0\'a7\'c1\'cb \'a3\'acmax_open_file \'d5\'e2\'b8\'f6\'ca\'c7 \'c7\'b0\'c3\'e6grains\'c0\'ef\'c3\'e6\'ce\'d2		\'c3\'c7\'d7\'d4\'bc\'ba\'b6\'a8\'d2\'e5\'b5\'c3 }

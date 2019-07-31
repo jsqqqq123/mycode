@@ -1,0 +1,37 @@
+{\rtf1\ansi\ansicpg936\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset134 STHeitiSC-Light;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh10080\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 select sore_name from store_information where sales > 1000 or (sales <500 and sales >275)\
+\
+select sum(sales) from sale_information\
+\
+select acount(sales) from sale_information\
+\
+\
+select count(distinct store_name) from store_information\
+\
+select store_name,sum(sales) from store_information  group by store_name \
+\
+select store_name ,sum(sales) from store_information group by store_name having sum(sales) >1500\
+\
+\
+select A1.store_name Store, sum(sales) \'93total sales\'94 from sore_information A1 gourd by A1.store_name\
+\
+\
+select A1.region_name Region, sum(A2.sales) Sales,from  Geography A1,sore_information A2 \
+where  A1.store_name = A2.store_name group by A1.region_name\
+\
+\
+select sum(sales) from store_information where sore_name in (select regon_name from geography where region_name =\'91West\'92)\
+\
+\
+
+\f1 union
+\f0  intersect  distinct\
+\
+union intersect  distinct\
+\
+having}
