@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1c7ee5e0-ab7f-4f11-9b4c-4298c6594bec" name="llwx" url="http://13.229.237.142">
+        <fileTransfer host="13.229.237.142" port="22" privateKey="$PROJECT_DIR$/../llwx_new.pem" rootFolder="/data/mycode/mysite" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,277 @@
+#!/usr/bin/env python
+#-*- coding: UTF-8 -*-
+
+"""
+@version: Python3.6.4
+@author:  Justinli
+
+"""
+
+from channels.generic.websocket import  AsyncJsonWebsocketConsumer
+from .utils import baccarat
+from .utils.tool import getredis
+import json
+# import redis
+
+# r = redis.StrictRedis(host='127.0.0.1', port=6379, decode_responses=True, db=0)
+r = getredis()
+
+class ChatConsumer(AsyncJsonWebsocketConsumer):
+    async def connect(self):
+        for i, v in self.scope.items():
+            print(i)
+            print(v)
+            print('***********')
+        print(type(self.scope['query_string']))
+        print(type(self.scope['user']))
+        # if self.scope["user"].username == "AnonymousUser" or self.scope["user"].username == "" or self.scope["user"].username is None:
+        if self.scope["user"].username == "AnonymousUser":
+        # if self.scope['username'] == "":
+        #     print(self.scope['username'])
+            return 1
+
+        else:
+            self.username = self.scope["user"].username
+            self.room_name = self.scope['url_route']['kwargs']['room_name']
+            self.room_group_name = 'chat_%s' % self.room_name
+            # if self.channel_name in list(self.groups.get(self.room_group_name, set())):
+            #     await self.disconnect()
+            # else:
+
+            print(self.channel_name)
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+            await self.accept()
+        # 发送欢迎消息 待测试
+            welcome_msg = {
+                'msg_type': 8,
+                'from_username': 'admin',
+                'from_nickname': 'admin',
+                'content': '欢迎' + self.scope["user"].username +'大驾光临',
+                'type': 'welcome_msg'
+            }
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                welcome_msg,
+            )
+
+    async def welcome_msg(self, event):
+        message = event
+        await self.send_json(message)
+
+
+    # async def disconnect(self, code):
+    #     await self.channel_layer.group_discard(
+    #         self.room_group_name,
+    #         self.channel_layer
+    #     )
+    #     go_msg = {
+    #         'msg_type': 8,
+    #         'content': self.scope["user"].username + '希望下次再次光临'
+    #     }
+    #     await self.send_json(go_msg)
+
+    async def receive(self, text_data=None, bytes_data=None):
+        text_data_json = json.loads(text_data)
+        print(text_data_json)
+
+        text_data_json['type'] = 'chat_message'
+
+        await self.channel_layer.group_send(
+                self.room_group_name,
+                text_data_json,
+            )
+
+    async def chat_message(self, event):
+        sendmessage = event
+        hkeys = 'h' + sendmessage['room_name'] + sendmessage['bac_num'] + '_' + sendmessage['msg_id']
+        r.set(hkeys, sendmessage)
+        r.expire(hkeys, 600)
+
+        if sendmessage['msg_type'] == 2:
+            await self.send_json(sendmessage)
+            # parse_msg = baccarat.message_parse(sendmessage)
+            # if parse_msg['code'] == 0:
+            room_name = sendmessage['room_name']
+            # bac_num = sendmessage['bac_num']
+            # username = sendmessage['username']
+            # xiazhu_type = sendmessage['xiazhu_type']
+                # money = parse_msg['money']
+                # yue_money = parse_msg['yue_money']
+                # xiazhu_type_code = baccarat.xiazhu(room_id=room_name, baccarat_id=bac_num, username=username, xiazhu_type=xiazhu_type, money=money, yue_money=yue_money)
+            xiazhu_type_code = baccarat.message_parse(sendmessage)
+            if xiazhu_type_code['code'] == 0:
+                content = "@"+ sendmessage['from_nickname'] +": " + sendmessage['content'] + " 下注成功，剩余金额为：" + str(xiazhu_type_code['yue_money'])
+                admin_return_msg = {
+                    'msg_type': 5,
+                    'msg_id': '12739108239012309',
+                    'from_username': "admin",
+                    'from_nickname': "admin",
+                    'to_nickname': sendmessage['from_nickname'],
+                    "room_name": room_name,
+                    "avatal_url": "http://lelewuxian.com",
+                    "bac_num": sendmessage['bac_num'],
+                    "content": content
+                }
+            else:
+                content = "@"+ sendmessage['from_nickname'] + ":" + xiazhu_type_code['msg']
+                admin_return_msg = {
+                    'msg_type': 5,
+                    'msg_id': '12739108239012309',
+                    'from_username': "admin",
+                    'from_nickname': "admin",
+                    'to_nickname': sendmessage['from_nickname'],
+                    "room_name": room_name,
+                    "avatal_url": "http://lelewuxian.com",
+                    "bac_num": sendmessage['bac_num'],
+                    "content": content
+                }
+            hkeys = 'h' + admin_return_msg['room_name'] + admin_return_msg['bac_num'] + '_' + admin_return_msg['msg_id']
+            r.set(hkeys, admin_return_msg)
+            r.expire(hkeys, 600)
+            await self.send_json(admin_return_msg)
+            # else:
+            #     content = "@"+ sendmessage['from_username'] + ":" + parse_msg['msg']
+            #     admin_return_msg = {
+            #         'msg_type': 5,
+            #         'msg_id': 12739108239012309,
+            #         'from_username': "admin",
+            #         'from_nickname': "admin",
+            #         "room_name": sendmessage['room_name'],
+            #         "avatal_url": "http://lelewuxian.com",
+            #         "bac_num": sendmessage['bac_num'],
+            #         "content": content,
+            #     }
+        elif sendmessage['msg_type'] == 3:
+            if sendmessage['msg_admin'] is not None and sendmessage['msg_admin'] == 300:
+                bacc_return_code = baccarat.show_bac(sendmessage['room_name'], sendmessage['bac_num'])
+                if bacc_return_code is not None and bacc_return_code['code'] == 0:
+                    content = bacc_return_code['msg']
+                    admin_return_msg = {
+                        'msg_type': 6,
+                        'msg_id': '12739108239012309',
+                        'from_username': "admin",
+                        'from_nickname': "admin",
+                        'to_nickname': sendmessage['from_nickname'],
+                        "room_name": sendmessage['room_name'],
+                        "avatal_url": "http://lelewuxian.com",
+                        "bac_num": sendmessage['bac_num'],
+                        "content": content,
+                    }
+
+                else:
+                    content = "@ALL 所有人 " + sendmessage['bac_num'] + ":本靴处理错误，请大家稍后，本靴将转人工处理！"
+                    admin_return_msg = {
+                        'msg_type': 5,
+                        'msg_id': '12739108239012309',
+                        'from_username': "admin",
+                        'from_nickname': "admin",
+                        'to_nickname': sendmessage['from_nickname'],
+                        "room_name": sendmessage['room_name'],
+                        "avatal_url": "http://lelewuxian.com",
+                        "bac_num": sendmessage['bac_num'],
+                        "content": content,
+                    }
+                hkeys = 'h' + admin_return_msg['room_name'] + admin_return_msg['bac_num'] + '_' + admin_return_msg['msg_id']
+                r.set(hkeys, admin_return_msg)
+                r.expire(hkeys, 600)
+                await self.send_json(admin_return_msg)
+            elif sendmessage['msg_admin'] is not None and sendmessage['msg_admin'] == 400:
+                jiesuan_return_code = baccarat.jiesuan(sendmessage['room_name'], sendmessage['bac_num'], sendmessage['content'])
+                print(jiesuan_return_code)
+                if jiesuan_return_code['code'] == 0:
+                    content = jiesuan_return_code['msg']
+                    admin_return_msg = {
+                        'msg_type': 7,
+                        'msg_id': '12739108239012309',
+                        'from_username': "admin",
+                        'from_nickname': "admin",
+                        "room_name": sendmessage['room_name'],
+                        "avatal_url": "http://lelewuxian.com",
+                        "bac_num": sendmessage['bac_num'],
+                        "content": content,
+                    }
+
+                else:
+                    content = "@ALL 所有人 " + sendmessage['bac_num'] + ":本靴处理错误，请大家稍后，本靴将转人工处理！"
+                    admin_return_msg = {
+                        'msg_type': 5,
+                        'msg_id': '12739108239012309',
+                        'from_username': "admin",
+                        'from_nickname': "admin",
+                        "room_name": sendmessage['room_name'],
+                        "avatal_url": "http://lelewuxian.com",
+                        "bac_num": sendmessage['bac_num'],
+                        "content": content,
+                    }
+                hkeys = 'h' + admin_return_msg['room_name'] + admin_return_msg['bac_num'] + '_' + admin_return_msg['msg_id']
+                r.set(hkeys, admin_return_msg)
+                r.expire(hkeys, 600)
+                historylistkey = "historylistkey_" + admin_return_msg['room_name']
+                if r.exists(historylistkey):
+                    hlist = r.get(historylistkey)
+                    if len(hlist.split('_')) < 15:
+                        hlists = hlist + "_" + admin_return_msg['bac_num']
+                        r.set(historylistkey, hlists)
+                    else:
+                        newlist = hlist.split['_'][1:]
+                        hlists = '_'.join(newlist)
+                        hlists = hlists + "_" + admin_return_msg['bac_num']
+                        r.set(historylistkey, hlists)
+                else:
+                    r.set(historylistkey, admin_return_msg['bac_num'])
+
+
+                await self.send_json(admin_return_msg)
+
+            else:
+                await self.send_json(sendmessage)
+
+
+        else:
+            await self.send_json(sendmessage)
+
+
+class AdminConsumer(AsyncJsonWebsocketConsumer):
+    async def connect(self):
+        # if self.scope["user"].username == "AnonymousUser" or self.scope["user"].username =="":
+        if self.scope["user"].username == "AnonymousUser":
+            await self.disconnect()
+
+        else:
+            self.username = self.scope["user"].username
+
+            self.room_name = self.scope['url_route']['kwargs']['room_name']
+            self.room_group_name = 'admin_%s' % self.room_name
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+            await self.accept()
+
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_layer
+        )
+
+    async def receive(self, text_data=None, bytes_data=None):
+        text_data_json = json.loads(text_data)
+
+        text_data_json['type'] = 'chat_message'
+
+        await self.channel_layer.group_send(
+                self.room_group_name,
+
+                text_data_json,
+            )
+
+    async def chat_message(self, event):
+
+        sendmessage = event
+
+        # await self.send(text_data=json.dumps(sendmessage))
+        await self.send_json(sendmessage)

@@ -1,0 +1,282 @@
+#!/usr/bin/env python
+#-*- coding: UTF-8 -*-
+
+"""
+@version: Python2.7.10
+@author:  Justinli
+
+"""
+
+from django.contrib.auth import get_user_model
+from myauth.models import MyBi, UserOperator
+import re
+import redis
+import hashlib
+import random
+import time
+import ast
+import json
+
+MyUsers = get_user_model()
+
+result_json = {
+	'z': "2",
+	'z,zd': "18",
+	'z,xd': "10",
+	'z,sd': "26",
+	'x': "1",
+	'x,zd': "17",
+	'x,xd': "9",
+	'x,sd': "25",
+	'h': "4",
+	'h,zd': "20",
+	'h,xd': "12",
+	'sb': "28",
+}
+
+POOL = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True, db=0)
+
+def getredis():
+    try:
+        return redis.StrictRedis(connection_pool=POOL)
+    except:
+        return None
+
+def fromStrParseInt(data):
+    pmatch = "(?P<xue>[0-9]+)"
+    roomnum = re.findall(pmatch, data)
+    return roomnum
+
+
+def getRoadFromRedis(room_id, result):
+    roadkey = room_id + "_road"
+    resultkey = room_id + "_road_total"
+    r = getredis()
+    ret = {}
+    try:
+        if r.exists(roadkey):
+            pre_result = r.get(roadkey)
+            now_result = pre_result + "," + result_json[result]
+            r.set(roadkey, now_result)
+        else:
+            now_result = result_json[result]
+            r.set(roadkey, now_result)
+
+        pre_total = [0, 0, 0, 0, 0]
+
+        next_result_list = now_result.split(',')
+        pre_total[0] = str(next_result_list.count('2') + next_result_list.count('18') + next_result_list.count('10') + next_result_list.count('26'))
+        pre_total[1] = str(next_result_list.count('1') + next_result_list.count('17') + next_result_list.count('9') + next_result_list.count('25'))
+        pre_total[2] = str(next_result_list.count('4') + next_result_list.count('20') + next_result_list.count('12') + next_result_list.count('28'))
+        pre_total[3] = str(next_result_list.count('18') + next_result_list.count('17') + next_result_list.count('20') + next_result_list.count('28'))
+        pre_total[4] = str(next_result_list.count('10') + next_result_list.count('9') + next_result_list.count('12') + next_result_list.count('28'))
+
+        pre_total_str = ",".join(pre_total)
+        r.set(resultkey, pre_total_str)
+        ret['tongji'] = pre_total_str
+        ret['result_list'] = now_result
+        return ret
+    except:
+        return None
+
+
+def getRoadFromRedisAPI(room_id):
+    roadkey = room_id + "_road"
+    resultkey = room_id + "_road_total"
+    r = getredis()
+    ret = {}
+    try:
+        if r.exists(roadkey):
+            now_result = r.get(roadkey)
+            r.set(roadkey, now_result)
+        else:
+            now_result = ""
+            r.set(roadkey, now_result)
+        pre_total = [0, 0, 0, 0, 0]
+        next_result_list = now_result.split(',')
+        pre_total[0] = str(next_result_list.count('2') + next_result_list.count('18') + next_result_list.count('10') + next_result_list.count('26'))
+        pre_total[1] = str(next_result_list.count('1') + next_result_list.count('17') + next_result_list.count('9') + next_result_list.count('25'))
+        pre_total[2] = str(next_result_list.count('4') + next_result_list.count('20') + next_result_list.count('12') + next_result_list.count('28'))
+        pre_total[3] = str(next_result_list.count('18') + next_result_list.count('17') + next_result_list.count('20') + next_result_list.count('28'))
+        pre_total[4] = str(next_result_list.count('10') + next_result_list.count('9') + next_result_list.count('12') + next_result_list.count('28'))
+        pre_total_str = ",".join(pre_total)
+        r.set(resultkey, pre_total_str)
+        ret['tongji'] = pre_total_str
+        ret['result_list'] = now_result
+        return ret
+    except:
+        return None
+
+
+def historyChatRoom(room_name, bac_num):
+    room_name = room_name
+    bac_num = bac_num
+    ret = {}
+    r = getredis()
+    if room_name is not None and bac_num is not None:
+        try:
+            hkeys = 'h' + room_name + bac_num + '*'
+            filename = 'log/h' + room_name + bac_num + '.log'
+            keys = r.keys(hkeys)
+            if len(keys) > 0:
+                with open(filename, 'a+') as f:
+                    for key in keys:
+                        f.write(r.get(key) + '\n')
+                ret['code'] = 0
+                ret['msg'] = "历史记录写入成功"
+            else:
+                ret['code'] = 1
+                ret['msg'] = "没有历史记录"
+        except:
+            ret['code'] = 1
+            ret['msg'] = "文件写入错误"
+    else:
+        ret['code'] = 1
+        ret['msg'] = "没有历史记录"
+
+    return ret
+
+def parseEndStatus(message):
+    touzhu_list = ['z','x', 'h', 's']
+    if len(message) > 2 and message[0].lower() in touzhu_list and message[-2].isdigit():
+        return 1
+    else:
+        return 0
+
+
+def hashmd5():
+    randname = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba1234567890',7))
+    md5str = randname + str(time.time())
+    md5str = md5str.encode('utf-8')
+    hmd5 = hashlib.md5()
+    hmd5.update(md5str)
+    user_id_md5 = hmd5.hexdigest()
+    return user_id_md5
+
+
+def checkUserMoney(username):
+    r = getredis()
+    money_key = username + "_money"
+    try:
+        myuser = MyUsers.objects.get(username=username)
+        mybi = MyBi.objects.filter(user_id=myuser)
+        if len(mybi) > 0:
+            if r.exists(money_key):
+                my_money = r.get(money_key)
+                if mybi[0].cur_m != my_money:
+                    mybi[0].cur_m = my_money
+                    mybi[0].save()
+        return 0
+    except:
+        return 1
+
+
+#单用户操作记录表
+def userOperatorLog(username, xueshu, xiazhu, xiazhu_money, result, result_money):
+    print("开始记录用户操作")
+    oprdate = time.strftime('%m-%d %H:%M')
+    # xiazhu = str(xiazhu).replace(",", "_")
+    # result = str(result).replace(",", "_")
+    try:
+        uo = UserOperator(username=username, bacc_num=xueshu, xiazhu=xiazhu, pre_yue=xiazhu_money, result=result, after_yue=result_money, xiazhu_date=oprdate)
+        # uo = UserOperator(username="lixiaoding", bacc_num="1ju136xue", xiazhu="z100,h1000", pre_yue=90000,result="z,zd", after_yue=100000,xiazhu_date="12:31")
+        uo.save()
+    except:
+        print("用户操作记录出错")
+
+
+def betparse(bet):
+    if bet[0:2].isalpha():
+        return bet[0:2], bet[2:len(bet)]
+    else:
+        return bet[0], bet[1:len(bet)]
+
+#显示台面是否流局 用于 consumer里的  show 之后
+def show_admin_bac(room_name, bac_num):
+    ret = {}
+    tui_key = room_name + "_tui" + time.strftime('%Y-%m-%d')
+    showadminkey = "showbac_" + room_name + "_" + bac_num
+    starttouzhu = 5000
+    z_total = 0
+    x_total = 0
+    sb_total = 0
+    try:
+        robot_list = MyUsers.objects.filter(is_robot=True) 
+        if len(robot_list) > 0:
+            robot_list_username = [robot.username for robot in robot_list]
+        else:
+            robot_list_username = []
+    except:
+        robot_list_username = []
+    print(robot_list_username)
+    r = getredis()
+    if r.exists(showadminkey):
+        mybets = r.get(showadminkey)
+        mybet_list = ast.literal_eval(mybets)
+        for users in mybet_list:
+            if users["username"] not in robot_list_username:
+                betlist = users["userbacc"].split(',')
+                print(betlist[:-1])
+                for bet in betlist[:-1]:
+                    (betwhich, betnumber) = betparse(bet)
+                    if betwhich == "z":
+                        z_total = z_total + int(betnumber)
+                    elif betwhich == "x":
+                        x_total = x_total + int(betnumber)
+                    elif betwhich == "sb":
+                        sb_total = sb_total + int(betnumber)
+        print(z_total - x_total)    
+        if z_total - x_total >= starttouzhu:
+            # room001 房间传输message   room001 js 弹出对话框
+            #同时将这个记录到redis中 用于 结算的时候 牌面总输赢
+            ret["code"] = 0
+            ret["msg"] = "z" + str(z_total - x_total)
+            r.set(tui_key, ret["msg"])
+            print(ret)
+            return ret
+        elif x_total - z_total >= starttouzhu:
+            ret["code"] = 0
+            ret["msg"] = "x" + str(x_total - z_total)
+            r.set(tui_key, ret["msg"])
+            print(ret)
+            return ret
+        else:
+            ret["code"] = 1
+            ret["msg"] = "@所有人:" + bac_num + "---本局流局" 
+            print(ret)
+            return ret
+    
+# 用于处理官方推码总输赢等
+def jiesuan_admin(roomname, result):
+    ret = {}
+    tui_key = roomname + "_tui" + time.strftime('%Y-%m-%d')
+    shuyin_total_key = roomname + "shuyintotal" + time.strftime('%Y-%m-%d')
+    shutotal_key = roomname + "shutotal" + time.strftime('%Y-%m-%d')
+    result_list = result.split(",")
+    r = getredis()
+    if r.exists(tui_key):
+        if r.exists(shuyin_total_key):
+            shuyintotal = int(r.get(shuyin_total_key))
+        else:
+            shuyintotal = 0
+        if r.exists(shutotal_key):
+            shutotal = int(r.get(shutotal_key))
+        else:
+            shutotal = 0
+        tui_total_str = r.get(tui_key)
+        (betwhich, betnumber) = betparse(tui_total_str)
+        if betwhich in result_list:
+            shuyintotal = int(betnumber) + shuyintotal
+        else:
+            shuyintotal = shuyintotal - int(betnumber)
+            shutotal = shutotal + int(betnumber)
+            r.set(shutotal_key, shutotal)
+            r.expire(shutotal_key, 172800)
+
+        r.set(shuyin_total_key, shuyintotal)
+        r.expire(shuyin_total_key, 172800)
+        ret["code"] = 0
+        return ret
+    else:
+        ret["code"] = 1
+        return ret

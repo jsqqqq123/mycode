@@ -1,0 +1,7 @@
+site_name: Justin's DocsHome
+nav:
+    - Home: index.md
+    - MyDjango: MyDjango.md
+    - MyDocker: MyDocker.md
+    - MyK8s: Myk8s.md
+theme: readthedocs

@@ -1,0 +1,476 @@
+#!/usr/bin/env python
+#-*- coding: UTF-8 -*-
+
+"""
+@version: Python2.7.10
+@author:  Justinli
+
+"""
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from myauth.models import MyAgent, UserOperator, MyBi, Rooms
+from django.contrib.auth import get_user_model
+from django.core.paginator import PageNotAnInteger, Paginator, EmptyPage, InvalidPage
+from chat.utils.tool import getredis
+import time
+import hashlib
+from django.contrib.auth.hashers import make_password
+import pickle
+
+
+r = getredis()
+
+MyUsers = get_user_model()
+
+
+def index(request):
+    return render(request, 'index.html', {})
+
+
+@login_required
+def agentlist(request):
+    username = request.user.username
+    if request.user.is_admin:
+        request.session["is_admin"] = request.user.is_admin
+    else:
+        request.session["is_admin"] = False
+
+
+    agent_res = MyAgent.objects.filter(username=username)
+    userlist = []
+    if len(agent_res) > 0:
+        agent_id = agent_res[0].agent_id
+        user_res = MyUsers.objects.filter(agent_id=agent_id)
+        if len(user_res) > 0:
+            for i in user_res:
+                bi_res = MyBi.objects.filter(user_id=i)
+                if len(bi_res) > 0:
+                    userlist.append(bi_res[0])
+            paginator = Paginator(userlist, 10)
+            if request.method == "GET":
+                page = request.GET.get('page')
+                try:
+                    userlist = paginator.page(page)
+                except PageNotAnInteger:
+                    userlist = paginator.page(1)
+                except InvalidPage:
+                    userlist = paginator.page(1)
+                except EmptyPage:
+                     userlist = paginator.page(paginator.num_pages)
+            return render(request, 'agent.html', {'userlist': userlist, "is_staff": request.session.get("is_admin", None)})
+        else:
+            return render(request, 'agent.html', {'userlist': userlist, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权登录!")
+
+
+@login_required
+def oplists(request):
+    username = request.GET.get('username')
+    oplist = []
+    if username is not None and username != "":
+        request.session['opusername'] = username
+    elif request.session.get('opusername', None) is not None:
+        username = request.session.get('opusername')
+    else:
+        return render(request, 'agent_operator.html', {'oplist': oplist, "is_staff": request.session.get("is_admin", None)})
+    op_res = UserOperator.objects.filter(username=username)
+    if len(op_res) > 0:
+        # for op in op_res:
+        #     oplist.append(op)
+        paginator = Paginator(op_res, 10)
+        if request.method == "GET":
+            page = request.GET.get('page')
+            try:
+                oplist = paginator.page(page)
+            except PageNotAnInteger:
+                oplist = paginator.page(1)
+            except InvalidPage:
+                oplist = paginator.page(1)
+            except EmptyPage:
+                 oplist = paginator.page(paginator.num_pages)
+    return render(request, 'agent_operator.html', {'oplist': oplist, "is_staff": request.session.get("is_admin", None)})
+
+
+
+@login_required
+def searchuser(request):
+    user = request.GET.get("username")
+    username = request.user.username
+    userlist = []
+    if request.user.is_admin:
+        user_obj = MyUsers.objects.filter(username=user)
+        if len(user_obj) > 0:
+            root_user_res = MyBi.objects.filter(user_id=user_obj[0])
+            if len(root_user_res) > 0:
+                return render(request, 'agent.html', {'userlist': root_user_res, "is_staff": request.session.get("is_admin", None)})
+        else:
+            return render(request,'error.html',{'errorMessage':"你查找的用户不存在"}) 
+    agent_res = MyAgent.objects.filter(username=username)
+    if len(agent_res) > 0 and user is not None and user != "":
+        agent_id = agent_res[0].agent_id
+        user_res = MyUsers.objects.filter(username=user)
+        if len(user_res) > 0 and user_res[0].agent_id == agent_id:
+            bi_res = MyBi.objects.filter(user_id=user_res[0])
+            userlist.append(bi_res[0])
+            return render(request, 'agent.html', {'userlist': userlist, "is_staff": request.session.get("is_admin", None)})
+        else:
+            return render(request, 'agent.html', {'userlist': userlist, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return render(request, 'agent.html', {'userlist': userlist, "is_staff": request.session.get("is_admin", None)})
+
+
+
+@login_required
+def charge(request):
+    is_admin = request.user.is_admin
+    user = request.user
+    username = request.GET.get("username")
+    bilist = []
+    if is_admin:
+        if username is not None and username != "":
+            user_1 = MyUsers.objects.filter(username=username)
+            if len(user_1) > 0:
+                userbi = MyBi.objects.filter(user_id=user_1[0])
+                return render(request, "charge.html", {"bilist": userbi, "is_staff": request.session.get("is_admin", None)})
+            else:
+                return render(request,'error.html',{'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        elif username == "":
+            return render(request,'error.html',{'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        else:
+            all_bi = MyBi.objects.all()
+            print(all_bi)
+            paginator = Paginator(all_bi, 10)
+            if request.method == "GET":
+                page = request.GET.get('page')
+                try:
+                    bilist = paginator.page(page)
+                except PageNotAnInteger:
+                    bilist = paginator.page(1)
+                except InvalidPage:
+                    bilist = paginator.page(1)
+                except EmptyPage:
+                     bilist = paginator.page(paginator.num_pages)
+            return render(request, "charge.html", {"bilist": bilist, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权访问")
+
+
+@login_required
+def addcharge(request):
+    is_admin = request.user.is_admin
+    username = request.GET.get("username")
+    money = request.GET.get("money")
+    money_key = username + "_money"
+    if is_admin:
+        if username is not None and username != "" and money is not None and money != "":
+            user = MyUsers.objects.filter(username=username)
+            if len(user) > 0:
+                try:
+                    mybi = MyBi.objects.filter(user_id=user[0])
+                    if len(mybi) > 0:
+                        print(mybi[0])
+                        mybi[0].cur_m = str(int(mybi[0].cur_m) + int(money))
+                        mybi[0].total_m = str(int(mybi[0].total_m) + int(money))
+                        mybi[0].recharge_lasttime = time.strftime("%Y-%m-%d")
+                        if r.exists(money_key):
+                            rmoney = r.get(money_key)
+                            rmoney = int(rmoney) + int(money)
+                            r.set(money_key, rmoney)
+                        else:
+                            rmoney = int(mybi[0].cur_m) + int(money)
+                            r.set(money_key, rmoney)
+
+                        mybi[0].save()
+
+                    else:
+                        newbi = MyBi(user_id=user[0], total_m=money, cur_m=money, get_m=0, recharge_lasttime=time.strftime("%Y-%m-%d"), withdraw_lastime=time.strftime("%Y-%m-%d"))
+                        newbi.save()
+                        if r.exists(money_key):
+                            rmoney = r.get(money_key)
+                            rmoney = int(rmoney) + int(money)
+                            r.set(money_key, rmoney)
+
+                        else:
+                            r.set(money_key, money)
+                    url = "/charge/?username=" + username
+                    return redirect(url)
+                except:
+                    return render(request,'error.html',{'errorMessage': "充值错误,请重新尝试", "is_staff": request.session.get("is_admin", None)})
+            else:
+                return render(request,'error.html',{'errorMessage': "要充值的用户不正确", "is_staff": request.session.get("is_admin", None)})
+        else:
+            return render(request,'error.html',{'errorMessage': "要充值的参数不正确", "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权充值")
+
+
+@login_required
+def getuser(request):
+    is_admin = request.user.is_admin
+    username = request.GET.get("username")
+    if is_admin:
+        if username is not None and username != "":
+            users = MyUsers.objects.filter(username=username)
+            if len(users) > 0:
+                return render(request, "user.html", {"userlist":users, "is_staff": request.session.get("is_admin", None)})
+            else:
+                return render(request,'error.html',{'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        elif username == "":
+            return render(request,'error.html',{'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        else:
+            users = MyUsers.objects.all()
+            paginator = Paginator(users, 10)
+            if request.method == "GET":
+                page = request.GET.get('page')
+                try:
+                    userlist = paginator.page(page)
+                except PageNotAnInteger:
+                    userlist = paginator.page(1)
+                except InvalidPage:
+                    userlist = paginator.page(1)
+                except EmptyPage:
+                     userlist = paginator.page(paginator.num_pages)
+            return render(request, "user.html", {"userlist":userlist, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权查看")
+
+
+@login_required
+def getqcorde(request):
+    is_admin = request.user.is_admin
+    username = request.user.username
+    if is_admin:
+        return render(request, "qcorde.html", {"username":username, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return render(request, "qcorde.html", {"username":username})
+
+@login_required
+def xiafen(request):
+    is_admin = request.user.is_admin
+    user = request.user
+    username = request.GET.get("username")
+    bilist = []
+    if is_admin:
+        if username is not None and username != "":
+            user_1 = MyUsers.objects.filter(username=username)
+            if len(user_1) > 0:
+                userbi = MyBi.objects.filter(user_id=user_1[0])
+                return render(request, "xiafen.html", {"bilist": userbi, "is_staff": request.session.get("is_admin", None)})
+            else:
+                return render(request,'error.html',{'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        elif username == "":
+            return render(request,'error.html',{'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        else:
+            all_bi = MyBi.objects.all()
+            paginator = Paginator(all_bi, 10)
+            if request.method == "GET":
+                page = request.GET.get('page')
+                try:
+                    bilist = paginator.page(page)
+                except PageNotAnInteger:
+                    bilist = paginator.page(1)
+                except InvalidPage:
+                    bilist = paginator.page(1)
+                except EmptyPage:
+                     bilist = paginator.page(paginator.num_pages)
+            return render(request, "xiafen.html", {"bilist": bilist, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权访问")
+
+
+@login_required
+def reducecharge(request):
+    is_admin = request.user.is_admin
+    username = request.GET.get("username")
+    money = request.GET.get("money")
+    money_key = username + "_money"
+    if is_admin:
+        if username is not None and username != "" and money is not None and money != "":
+            user = MyUsers.objects.filter(username=username)
+            if len(user) > 0:
+                try:
+                    mybi = MyBi.objects.filter(user_id=user[0])
+                    if len(mybi) > 0:
+                        rmoney = 0
+                        if r.exists(money_key):
+                            rmoney = r.get(money_key)
+                        if int(money) > int(rmoney):
+                            return render(request,'error.html',{'errorMessage': "你的余额不足,请重新更改提取余额", "is_staff": request.session.get("is_admin", None)})
+
+                        mybi[0].cur_m = int(rmoney) - int(money)
+                        mybi[0].get_m = int(mybi[0].get_m) + int(money)
+                        mybi[0].withdraw_lastime = time.strftime("%Y-%m-%d")
+                        mybi[0].save()
+                        now_money = int(rmoney) - int(money)
+                        r.set(money_key, now_money)
+                except:
+                    return render(request,'error.html',{'errorMessage': "下分错误,请重新尝试", "is_staff": request.session.get("is_admin", None)})
+                url = "/xiafen/?username=" + username
+                return redirect(url)
+            else:
+                return render(request,'error.html',{'errorMessage': "要下分的用户不正确", "is_staff": request.session.get("is_admin", None)})
+        else:
+            return render(request,'error.html',{'errorMessage': "下分的参数不对", "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权下分")
+
+
+@login_required
+def robot(request):
+    is_admin = request.user.is_admin
+    username = request.GET.get("username")
+    if is_admin:
+        if username is not None and username != "":
+            users = MyUsers.objects.filter(username=username)
+            if len(users) > 0:
+                return render(request, "robot.html",
+                              {"userlist": users, "is_staff": request.session.get("is_admin", None)})
+            else:
+                return render(request, 'error.html',
+                              {'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        elif username == "":
+            return render(request, 'error.html',
+                          {'errorMessage': "用户名错误", "is_staff": request.session.get("is_admin", None)})
+        else:
+            users = MyUsers.objects.filter(is_robot=True)
+            paginator = Paginator(users, 10)
+            if request.method == "GET":
+                page = request.GET.get('page')
+                try:
+                    userlist = paginator.page(page)
+                except PageNotAnInteger:
+                    userlist = paginator.page(1)
+                except InvalidPage:
+                    userlist = paginator.page(1)
+                except EmptyPage:
+                    userlist = paginator.page(paginator.num_pages)
+            return render(request, "robot.html", {"userlist": userlist, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权查看")
+
+
+@login_required
+def addrobot(request):
+    is_admin = request.user.is_admin
+    username = request.GET.get("username")
+    nickname = request.GET.get("nickname")
+
+    if is_admin:
+        if username is not None and nickname is not None:
+            if username != "" and nickname != "":
+                try:
+                    authuser = MyUsers.objects.filter(username=username)
+                    if len(authuser) > 0:
+                        return render(request, 'error.html', {'errorMessage': "用户已经存在",
+                                                              "is_staff": request.session.get("is_admin", None)})
+                    authnick = MyUsers.objects.filter(nickname=nickname)
+                    if len(authnick) > 0:
+                        return render(request, 'error.html', {'errorMessage': "昵称已经存在",
+                                                              "is_staff": request.session.get("is_admin", None)})
+                    md5str = username + str(time.time())
+                    md5str = md5str.encode('utf-8')
+                    hmd5 = hashlib.md5()
+                    hmd5.update(md5str)
+                    user_id_md5 = hmd5.hexdigest()
+
+                    user = MyUsers(username=username, nickname=nickname, password=make_password("112233.com"),
+                                   user_id=user_id_md5,
+                                   agent_id="admin", is_robot=True)
+                    user.save()
+                except:
+                    return render(request, 'error.html',
+                                  {'errorMessage': "创建机器人用户失败", "is_staff": request.session.get("is_admin", None)})
+                try:
+                    myuser = MyUsers.objects.filter(username=username)
+                    if len(myuser) > 0:
+                        mybi = MyBi(user_id=myuser[0], total_m=200000, cur_m=200000, get_m=0, recharge_lasttime=time.strftime("%Y-%m-%d"), withdraw_lastime=time.strftime("%Y-%m-%d"))
+                        mybi.save()
+                        url = "/robot/?username=" + username
+                        return redirect(url)
+                    else:
+                        return render(request, 'error.html',
+                                      {'errorMessage': "创建机器人用户失败", "is_staff": request.session.get("is_admin", None)})
+                except:
+                    return render(request, 'error.html',
+                                  {'errorMessage': "给机器人充值失败", "is_staff": request.session.get("is_admin", None)})
+            else:
+                return render(request,'error.html',{'errorMessage': "传递参数错误，不能为空", "is_staff": request.session.get("is_admin", None)})
+        else:
+            return render(request,'error.html',{'errorMessage': "传递参数错误，不能为空", "is_staff": request.session.get("is_admin", None)})
+
+    else:
+        return HttpResponse("你无权操作")
+
+
+@login_required
+def robotset(request):
+    robot_key = "robot_room"
+    is_admin = request.user.is_admin
+    roomlist = Rooms.objects.all()
+    query = request.GET.get('query')
+
+    if is_admin:
+        robotuser_list = []
+        myrobotuser = MyUsers.objects.filter(is_robot=True)
+        if len(myrobotuser) > 0:
+            for i in range(0, len(myrobotuser)):
+                robotuser_dict = {
+                    "username": myrobotuser[i].username,
+                    "nickname": myrobotuser[i].nickname,
+                }
+                robotuser_list.append(robotuser_dict)
+            r.set("robotuser_list", pickle.dumps(robotuser_list))
+        else:
+            r.set("robotuser_list", "")
+
+        if r.exists(robot_key):
+            robot_str = r.get(robot_key)
+        else:
+            robot_str = ",".join(['3' for i in range(0, len(roomlist))])
+            r.set(robot_key, robot_str)
+        robot_str_list = robot_str.split(",")
+        if query is not None and query != "":
+            room_action = query.split("_")[0]
+            room_id = query.split('_')[-1]
+            room_index = query.split('_')[-1][-1]
+            room_index_int = int(room_index)
+            if room_action == "start":
+                if robot_str_list[room_index_int - 1] != "0":
+                    robot_str_list[room_index_int - 1] = "0"
+                    r.set(robot_key, ",".join(robot_str_list))
+            elif room_action == "stop":
+                if robot_str_list[room_index_int - 1] != "1":
+                    robot_str_list[room_index_int - 1] = "1"
+                    r.set(robot_key, ",".join(robot_str_list))
+            str_1 = ""
+            for i in range(0,len(robot_str_list)):
+                if robot_str_list[i] == "0":
+                    sub_str = "准备开始"
+                elif robot_str_list[i] == "1":
+                    sub_str = "准备停止"
+                elif robot_str_list[i] == "2":
+                    sub_str = "机器人投注中"
+                elif robot_str_list[i] == "3":
+                    sub_str = "暂停投注中"
+                str_1 = str_1 + "房间" + str(i + 1) + ":" + sub_str + "#"
+            return render(request, 'robotset.html', {'roomlist': roomlist, "roomstate":str_1,  "is_staff": request.session.get("is_admin", None)})
+        elif query == "":
+            return render(request, 'error.html',
+                          {'errorMessage': "传递参数错误，不能为空", "is_staff": request.session.get("is_admin", None)})
+        else:
+            str_2 = ""
+            for i in range(0,len(robot_str_list)):
+                if robot_str_list[i] == "0":
+                    sub_str = "准备开始"
+                elif robot_str_list[i] == "1":
+                    sub_str = "准备停止"
+                elif robot_str_list[i] == "2":
+                    sub_str = "机器人投注中"
+                elif robot_str_list[i] == "3":
+                    sub_str = "暂停投注中"
+                str_2 = str_2 + "房间" + str(i + 1) + ":" + sub_str + "#"
+            return render(request, 'robotset.html', {'roomlist': roomlist, "roomstate":str_2, "is_staff": request.session.get("is_admin", None)})
+    else:
+        return HttpResponse("你无权操作")
