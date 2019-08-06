@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人庄闲最小">个人庄闲最小:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_zx_min" placeholder="" value={{user_zx_min}}>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人庄闲最大">个人庄闲最大:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_zx_max" placeholder="" value={{user_zx_max}}>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人庄，闲对最大">个人庄，闲对最大:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_d_max" placeholder="" value={{user_d_max}}>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人庄，闲对最小">个人庄，闲对最小:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_d_min" placeholder="" value={{user_d_min}}>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人和最大">个人和最大:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_h_max" placeholder="" value={{user_h_max}}>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人和最小">个人和最小:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_h_min" placeholder="" value={{user_h_min}}>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人三宝最大">个人三宝最大:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_sb_max" placeholder="" value={{user_sb_max}}>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="个人三宝最小">个人三宝最小:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="user_sb_min" placeholder="" value={{user_sb_min}}>
+          </div>
+      </form>
+
+      <form class="form-row">
+          <div class="col-2">
+              <label value="台面起始比例">台面起始比例:</label>
+          </div>
+          <div class="col-3">
+              <input type="text" class="form-control" id="tui_total_set" placeholder="" value={{tui_total_set}}>
+          </div>
+      </form>
+      <form class="form-row">
+
+          <div class="col-3">
+               <input class="form-control btn btn-primary" id="setting" type="button" value="设置"/>
+          </div>
+      </form>
+      <form class="form-row">
+          <div class="col-2">
+              <label value="公告栏">公告栏:</label>
+          </div>
+          <div class="col-9">
+              <input type="textarea" class="form-control" id="banner" placeholder="">
+          </div>
+      </form>
+      <form class="form-row">
+
+          <div class="col-3">
+               <input class="form-control btn btn-primary" id="banner_set" type="button" value="公告设置"/>
+          </div>
+      </form>
+
+  </div>
+<script>
+    document.querySelector("#setting").onclick = function(e){
+        var zx_min = document.querySelector("#user_zx_min").value
+        var zx_max = document.querySelector("#user_zx_max").value
+        var d_min = document.querySelector("#user_d_min").value
+        var d_max = document.querySelector("#user_d_max").value
+        var h_min = document.querySelector("#user_h_min").value
+        var h_max = document.querySelector("#user_h_max").value
+        var sb_min = document.querySelector("#user_sb_min").value
+        var sb_max = document.querySelector("#user_sb_max").value
+        var tui_set = document.querySelector("#tui_total_set").value
+        window.location.href = "http://13.229.237.142/mysetting/?zxmin=" + zx_min + "&zxmax=" + zx_max + "&dmax=" + d_max + "&dmin=" + d_min + "&hmax=" + h_max + "&hmin=" + h_min + "&sbmax=" + sb_max + "&sbmin=" + sb_min + "&tuiset=" + tui_set
+    }
+
+    document.querySelector("#banner_set").onclick = function(e){
+        var msg = document.querySelector("#banner").value
+
+        if(msg == ""){
+            alert("banner 不能为空")
+            return 1
+        }
+
+        window.location.href = "http://13.229.237.142/message_set/?msg=" + msg
+    }
+</script>
+{% endblock %}
+

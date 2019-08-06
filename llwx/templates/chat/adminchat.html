@@ -1,0 +1,308 @@
+{% load staticfiles %}
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <script src="../../static/js/jquery-3.1.1.js"></script>
+    <!--<link rel="stylesheet" href="../static/css/bootstrap.min.css" >-->
+    <!--<link rel="stylesheet" href="../static/css/style.css">-->
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.min.js"></script>
+    <title></title>
+</head>
+<body>
+<div class=".container">
+    <form>
+    <div class="form-row">
+        {% for roomitem in roomlist %}
+          <div class="col-md-4 col-lg-4" style="border:2px solid;">
+            <!--<img class="card-img-top" src="..." alt="Card image cap">-->
+            <div class="form-group">
+              <h5 class="col-md-6 col-lg-6">{{ roomitem.room_name}}</h5>
+              <span id=span{{roomitem.room_id}} class="col-md-6 col-lg-6"></span>
+              <div class="col-md-12 col-lg-12" id=textarea{{ roomitem.room_id }}  style="height:460px; overflow:scroll; border:1px solid;"></div>
+            </div>
+              <div class="row">
+                <div class="form-group col-md-8 col-lg-8">
+                    <input class="form-control" id=in{{roomitem.room_id}} type="text"/>
+                </div>
+                <div class="form-group col-md-4 col-lg-4">
+                    <input class="form-control btn btn-primary" id={{ roomitem.room_id }} type="button" value="Send"/>
+                </div>
+              </div>
+
+            <div class="row">
+                <div class="form-group col-md-3 col-lg-3">
+                    <input class="form-control btn btn-primary" id=start{{ roomitem.room_id }} type="button" value="开始投注"/>
+                </div>
+                <div class="form-group col-md-3 col-lg-3">
+                    <input class="form-control btn btn-primary" id=stop{{ roomitem.room_id }} type="button" value="停止投注"/>
+                </div>
+                <div class="form-group col-md-3 col-lg-4">
+                    <input class="form-control btn btn-primary" id=show{{ roomitem.room_id }} type="button" value="本局投注表"/>
+                </div>
+            </div>
+              <div class="row">
+                  <div class="form-group col-md-3 col-lg-3">
+                      <span>闲的信息</span>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <select class="form-control" id=x1{{roomitem.room_id}}>
+                          <option value='b'>黑桃</option>
+                          <option value='h'>红桃</option>
+                          <option value='f'>方块</option>
+                          <option value='m'>梅花</option>
+                      </select>
+                      <!--<input class="form-control" id=x1t{{roomitem.room_id}} placeholder="闲牌1" type="text"/>-->
+                      <select class="from-control" id=x1t{{roomitem.room_id}}>
+                        <option disabled selected value></option>
+                        <option value='1'>A</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                        <option value='7'>7</option>
+                        <option value='8'>8</option>
+                        <option value='9'>9</option>
+                        <option value='0'>10</option>
+                        <option value='j'>J</option>
+                        <option value='q'>Q</option>
+                        <option value='k'>K</option>
+                      </select>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <select class="form-control" id=x2{{roomitem.room_id}}>
+                          <option value='b'>黑桃</option>
+                          <option value='h'>红桃</option>
+                          <option value='f'>方块</option>
+                          <option value='m'>梅花</option>
+                      </select>
+                      <!--<input class="form-control" id=x2t{{roomitem.room_id}} placeholder="闲牌2" type="text"/>-->
+                      <select class="from-control" id=x2t{{roomitem.room_id}}>
+                        <option disabled selected value></option>
+                        <option value='1'>A</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                        <option value='7'>7</option>
+                        <option value='8'>8</option>
+                        <option value='9'>9</option>
+                        <option value='0'>10</option>
+                        <option value='j'>J</option>
+                        <option value='q'>Q</option>
+                        <option value='k'>K</option>
+                      </select>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <select class="form-control" id=x3{{roomitem.room_id}}>
+                          <option value='b'>黑桃</option>
+                          <option value='h'>红桃</option>
+                          <option value='f'>方块</option>
+                          <option value='m'>梅花</option>
+                      </select>
+                      <!--<input class="form-control" id=x3t{{roomitem.room_id}} placeholder="闲牌3" type="text"/>-->
+                      <select class="from-control" id=x3t{{roomitem.room_id}}>
+                        <option disabled selected value></option>
+                        <option value=''>空</option>
+                        <option value='1'>A</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                        <option value='7'>7</option>
+                        <option value='8'>8</option>
+                        <option value='9'>9</option>
+                        <option value='0'>10</option>
+                        <option value='j'>J</option>
+                        <option value='q'>Q</option>
+                        <option value='k'>K</option>
+                      </select>
+                  </div>
+
+              </div>
+              <div class="row">
+                  <div class="form-group col-md-3 col-lg-3">
+                      <span >庄的信息</span>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <select class="form-control" id=z1{{roomitem.room_id}}>
+                        <option value='b'>黑桃</option>
+                        <option value='h'>红桃</option>
+                        <option value='f'>方块</option>
+                        <option value='m'>梅花</option>
+                      </select>
+                      <!--<input class="form-control" id=z1t{{roomitem.room_id}} placeholder="庄牌1" type="text"/>-->
+                      <select class="from-control" id=z1t{{roomitem.room_id}}>
+                        <option disabled selected value></option>
+                        <option value='1'>A</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                        <option value='7'>7</option>
+                        <option value='8'>8</option>
+                        <option value='9'>9</option>
+                        <option value='0'>10</option>
+                        <option value='j'>J</option>
+                        <option value='q'>Q</option>
+                        <option value='k'>K</option>
+                      </select>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                    <select class="form-control" id=z2{{roomitem.room_id}}>
+                        <option value='b'>黑桃</option>
+                        <option value='h'>红桃</option>
+                        <option value='f'>方块</option>
+                        <option value='m'>梅花</option>
+                    </select>
+                    <!--<input class="form-control" class="form-control" id=z2t{{roomitem.room_id}} placeholder="庄牌2" type="text"/>-->
+                    <select class="from-control" id=z2t{{roomitem.room_id}}>
+                        <option disabled selected value></option>
+                        <option value='1'>A</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                        <option value='7'>7</option>
+                        <option value='8'>8</option>
+                        <option value='9'>9</option>
+                        <option value='0'>10</option>
+                        <option value='j'>J</option>
+                        <option value='q'>Q</option>
+                        <option value='k'>K</option>
+                      </select>
+
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                    <select class="form-control" id=z3{{roomitem.room_id}}>
+                        <option value='b'>黑桃</option>
+                        <option value='h'>红桃</option>
+                        <option value='f'>方块</option>
+                        <option value='m'>梅花</option>
+                    </select>
+                    <!--<input class="form-control" id=z3t{{roomitem.room_id}} placeholder="庄牌3" type="text"/>-->
+                    <select class="from-control" id=z3t{{roomitem.room_id}}>
+                        <option disabled selected value></option>
+                        <option value=''>空</option>
+                        <option value='1'>A</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                        <option value='7'>7</option>
+                        <option value='8'>8</option>
+                        <option value='9'>9</option>
+                        <option value='0'>10</option>
+                        <option value='j'>J</option>
+                        <option value='q'>Q</option>
+                        <option value='k'>K</option>
+                      </select>
+                  </div>
+              </div>
+
+              <div class="row">
+                  <div class="form-group col-md-2 col-lg-2">
+                      <span>本靴结果</span>
+                  </div>
+                  <div class="form-group col-md-4 col-lg-4">
+                      <select class="form-control" id=zxresult{{roomitem.room_id}}>
+                        <option value="z">庄赢，无对</option>
+                        <option value="z,zd">庄赢,庄对</option>
+                        <option value="z,xd">庄赢,闲对</option>
+                        <option value="z,sd">庄赢,庄闲对</option>
+                        <option value="x">闲赢，无对</option>
+                        <option value="x,xd">闲赢，闲对</option>
+                        <option value="x,zd">闲赢，庄对</option>
+                        <option value="x,sd">闲赢,庄闲对</option>
+                        <option value="h">和，无对</option>
+                        <option value="h,zd">和，庄对</option>
+                        <option value="h,xd">和，闲对</option>
+                        <option value="sb">三宝</option>
+                      </select>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <input class="form-control btn btn-primary" id=result{{ roomitem.room_id }} type="button" value="本局结果"/>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <!--<input class="form-control btn btn-primary" id=jiesuan{{ roomitem.room_id }} type="button" value="本局结算"/>-->
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="form-group col-md-3 col-lg-3">
+                  <!--    <input class="form-control btn btn-danger" id=heika{{ roomitem.room_id }} type="button" value="黑卡已出"/>  -->
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <input class="form-control btn btn-danger" id=change{{ roomitem.room_id }} type="button" value="更改结果"/>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <input class="form-control btn btn-danger" id=benxue{{ roomitem.room_id }} type="button" value="本靴结束"/>
+                  </div>
+                  <div class="form-group col-md-3 col-lg-3">
+                      <input class="form-control btn btn-danger" id=jinri{{ roomitem.room_id }} type="button" value="今日结束"/>
+                  </div>
+              </div>
+          </div>
+
+        <script src="../../static/js/websocket/{{roomitem.room_id}}.js"></script>
+        {% endfor %}
+    </div>
+    <div class="form-row">
+        <input class="form-control" id="admintext" type="text"/>"
+        <input class="from-control" id="forbbiden" type="button" value="禁言用户"/>
+        <input class="from-control" id="nologgin" type="button" value="踢出用户"/>
+    </div>
+</form>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新增</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="bac_num">几靴几局</label>
+                        <input type="text" name="txt_user" class="form-control" id="bac_num" placeholder="1xue1ju">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_z">开牌庄结果</label>
+                        <input type="text" name="txt_money" class="form-control" id="txt_z" placeholder="b3h4">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_x">开牌闲结果</label>
+                        <input type="text" name="txt_money" class="form-control" id="txt_x" placeholder="b3h4">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_r">开牌结果</label>
+                        <input type="text" name="txt_money" class="form-control" id="txt_r" placeholder="z,zd">
+                    </div>
+                    <div class="form-group">
+                         <button type="button" class="btn btn-default">取消该局还回金额</button>
+                        <button type="button" class="btn btn-primary" id="change_submit">更改改局结果</button>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>取消</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="../../static/js/websocket/admin.js"></script>
+</body>
+</html>

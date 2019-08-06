@@ -1,0 +1,74 @@
+<!-- chat/templates/chat/room.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script src="../../static/js/jquery-3.1.1.js"></script>
+    <title>Chat Room</title>
+</head>
+<body>
+<p>{{ admin_name_json }}</p>
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
+    <input id="chat-message-input" type="text" size="100"/><br/>
+    <input id="chat-message-submit" type="button" value="Send"/>
+    <input id="chat-message-logout" type="button" value="Logout"/>
+</body>
+<script>
+    var roomName = "{{ admin_name_json }}";
+    var username = "{{ username }}";
+
+    var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/admin/' + roomName + '/');
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        var username = data['from_id'];
+        var msg_id = data['msg_id'];
+//        var username = "lixiaoding";
+        document.querySelector('#chat-log').value += ('[' + username + ':' + msg_id + ']' + ': ' + message + '\n');
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        var messageInputDom = document.querySelector('#chat-message-input');
+        var message = messageInputDom.value;
+//        var from_id = "root";
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'msg_id': '12312312398123213',
+            'is_group': 'True',
+            'type_id': '1',
+            'head_url': 'https://hear.lelewuxian.com',
+            'from_id': username,
+            'to_id': 'groupid',
+            'msg_time': '1982-01-24',
+            'data': "",
+        }));
+//         chatSocket.send(JSON.stringify({
+//             'message': message,
+//             'from_id': "lixiaoding",
+//             'msg_id': '12312312398123213',
+//        }));
+
+        messageInputDom.value = '';
+    };
+
+    document.querySelector('#chat-message-logout').onclick = function(e){
+        window.location.assign('/accounts/logout/');
+    };
+
+
+</script>
+</html>

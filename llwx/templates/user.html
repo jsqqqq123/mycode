@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+      <div class="form-row">
+          <form>
+              <input type="text" class="form-control" id="searchtext">
+              <input class="form-control btn btn-primary" id="searchbt" type="button" value="Search"/>
+          </form>
+      </div>
+      <div class="form-row">
+          <table class="table table-hover table-bordered table-striped" id="maintable">
+              <thead>
+                <tr class="table-primary">
+                  <th scope="col">#</th>
+                  <th scope="col">用户名</th>
+                  <th scope="col">昵称</th>
+                  <th scope="col">所属代理</th>
+                  <th scope="col">vip</th>
+                  <th scope="col">是否激活</th>
+                  <th scope="col">是否禁言</th>
+                  <th scope="col">机器人</th>
+                  <th scope="col">分成比例</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for user in userlist %}
+                <tr>
+                  <th scope="row">1</th>
+                  <td><a class="addcharge" href="#">{{user.username}}</a></td>
+                  <td>{{user.nickname}}</td>
+                  <td>{{user.agent_id}}</td>
+                  <td>{{user.is_vip}}</td>
+                  <td>{{user.is_active}}</td>
+                  <td>{{user.is_talke}}</td>
+                  <td>{{user.is_robot}}</td>
+                  <td>{{user.fencheng}}</td>
+                </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+          <div id="pages" class="text-center" >
+            <nav>
+            <ul class="pagination">
+                <li class="step-links">
+                {% if userlist.has_previous %}
+                    <a class='active' href="?page={{ userlist.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ userlist.number }} of {{ userlist.paginator.num_pages }}</span>
+
+                {% if userlist.has_next %}
+                    <a class='active' href="?page={{ userlist.next_page_number }}">下一页</a>
+                {% endif %}
+                </li></ul>
+            </nav>
+          </div>
+      </div>
+      </div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新增</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="txt_user">用户名</label>
+                        <input type="text" name="txt_user" class="form-control" id="txt_user" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_money">充值金额</label>
+                        <input type="text" name="txt_money" class="form-control" id="txt_money" placeholder="充值金额">
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label for="txt_departmentlevel">部门级别</label>-->
+                        <!--<input type="text" name="txt_departmentlevel" class="form-control" id="txt_departmentlevel" placeholder="部门级别">-->
+                    <!--</div>-->
+                    <!--<div class="form-group">-->
+                        <!--<label for="txt_statu">描述</label>-->
+                        <!--<input type="text" name="txt_statu" class="form-control" id="txt_statu" placeholder="状态">-->
+                    <!--</div>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>取消</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>确定</button>
+                </div>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel01">更改密码</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="passwd">新密码</label>
+                        <input type="password" name="txt_user" class="form-control" id="passwd" placeholder="新密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="cpasswd">再次确认</label>
+                        <input type="password" name="txt_money" class="form-control" id="cpasswd" placeholder="再次确认">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>取消</button>
+                    <button type="button" id="btn_changepasswd" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>更改密码</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    document.querySelector("#searchbt").onclick = function(e){
+        var username = document.querySelector("#searchtext").value
+        window.location.href = "http://13.229.237.142/getuser/?username=" + username
+        document.querySelector("#searchtext").value = ""
+    }
+
+    $(".addcharge").click(function(){
+        $("#myModalLabel").text("充值");
+        var username = $(this).text()
+        console.log(username)
+        $("#txt_user").val(username)
+        $("#myModal").modal();
+    })
+
+    $("#btn_submit").click(function(){
+        var username = document.querySelector("#txt_user").value
+        var money = document.querySelector("#txt_money").value
+        console.log(username)
+        console.log(money)
+        window.location.href = "http://13.229.237.142/addcharge/?username=" + username + "&money=" + money
+    })
+
+    $("#btn_changepasswd").click(function(){
+        var username = document.querySelector("#txt_user").value
+        var passwd = document.querySelector("#passwd").value
+        var cpasswd = document.querySelector("#cpasswd").value
+        if(passwd != cpasswd){
+            alert("两次密码输入不正确")
+            return 1
+        }
+
+        window.location.href = "http://13.229.237.142/changepd/?pd=" + passwd + "&username=" + username
+    })
+
+
+</script>
+{% endblock %}

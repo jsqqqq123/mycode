@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+      <div class="form-row">
+          <form>
+<!--              <input type="text" class="form-control" id="searchtext" placeholder="2019-01-01">    -->
+<!--              <input class="form-control btn btn-primary" id="searchbt" type="button" value="Search"/> -->
+          </form>
+      </div>
+      <div class="form-row">
+          <table class="table table-hover table-bordered table-striped" id="maintable">
+              <thead>
+                <tr class="table-primary">
+                  <th scope="col">时间</th>
+                  <th scope="col">台面分总输赢</th>
+                  <th scope="col">台面分总洗码</th>
+                  <th scope="col">零数总利润</th>
+                  <th scope="col">三宝总投注分</th>
+                  <th scope="col">选手三宝赢亏总分</th>
+                  <th scope="col">公司三宝利润总分</th>
+
+                </tr>
+              </thead>
+              <tbody>
+              {% for combi in combilist %}
+                <tr>
+                  <!--<th scope="row">1</th>-->
+                  <td>{{combi.date_time}}</td>
+                  <td>{{combi.zx_total}}</td>
+                  <td>{{combi.zx_xima_total}}</td>
+                  <td>{{combi.ls_com_total}}</td>
+                  <td>{{combi.sb_total}}</td>
+                  <td>{{combi.sb_user_total}}</td>
+                  <td>{{combi.sb_com_total}}</td>
+                </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+          <div id="pages" class="text-center" >
+            <nav>
+            <ul class="pagination">
+                <li class="step-links">
+                {% if combilist.has_previous %}
+                    <a class='active' href="?page={{ combilist.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ combilist.number }} of {{ combilist.paginator.num_pages }}</span>
+
+                {% if combilist.has_next %}
+                    <a class='active' href="?page={{ combilist.next_page_number }}">下一页</a>
+                {% endif %}
+                </li></ul>
+            </nav>
+          </div>
+      </div>
+      </div>
+<script>
+    document.querySelector("#searchbt").onclick = function(e){
+        var date_time = document.querySelector("#searchtext").value
+        window.location.href = "http://13.229.237.142/cbi/?date_time=" + date_time
+        document.querySelector("#searchtext").value = ""
+    }
+</script>
+{% endblock %}

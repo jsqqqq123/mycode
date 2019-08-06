@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+      <div class="form-row">
+          <form>
+              <input type="text" class="form-control" id="searchtext">
+              <input class="form-control btn btn-primary" id="searchbt" type="button" value="Search"/>
+          </form>
+      </div>
+      <div class="form-row">
+          <table class="table table-hover table-bordered table-striped" id="maintable">
+              <thead>
+                <tr class="table-primary">
+                  <th scope="col">#</th>
+                  <th scope="col">用户名</th>
+                  <th scope="col">总充值</th>
+                  <th scope="col">剩余金额</th>
+                  <th scope="col">已取现金额</th>
+                  <th scope="col">最后充值时间</th>
+                  <th scope="col">最后取现时间</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for user in bilist %}
+                <tr>
+                  <th scope="row">1</th>
+                  <td><a class="reducecharge" href="#">{{user.user_id.username}}</a></td>
+                  <td>{{user.total_m}}</td>
+                  <td>{{user.cur_m}}</td>
+                  <td>{{user.get_m}}</td>
+                  <td>{{user.recharge_lasttime}}</td>
+                  <td>{{user.withdraw_lastime}}</td>
+                </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+          <div id="pages" class="text-center" >
+            <nav>
+            <ul class="pagination">
+                <li class="step-links">
+                {% if bilist.has_previous %}
+                    <a class='active' href="?page={{ bilist.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ bilist.number }} of {{ bilist.paginator.num_pages }}</span>
+
+                {% if bilist.has_next %}
+                    <a class='active' href="?page={{ bilist.next_page_number }}">下一页</a>
+                {% endif %}
+                </li></ul>
+            </nav>
+          </div>
+      </div>
+      </div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">下分</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="txt_user">用户名</label>
+                        <input type="text" name="txt_user" class="form-control" id="txt_user" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_money">下分金额</label>
+                        <input type="text" name="txt_money" class="form-control" id="txt_money" placeholder="充值金额">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>取消</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    document.querySelector("#searchbt").onclick = function(e){
+        var username = document.querySelector("#searchtext").value
+        window.location.href = "http://13.229.237.142/xiafen/?username=" + username
+        document.querySelector("#searchtext").value = ""
+    }
+
+//    document.querySelector(".addcharge").onclick = function(e){
+//        document.querySelector("#myModalLabel").innerHTML("充值")
+//        var username = document.querySelector(".addcharge").innerHTML
+//        console.log(username)
+//        document.querySelector("#txt_user").innerHTML = username
+//        document.querySelector("#myModal").modal()
+//    }
+
+    $(".reducecharge").click(function(){
+        $("#myModalLabel").text("下分");
+        var username = $(this).text()
+        console.log(username)
+        $("#txt_user").val(username)
+        $("#myModal").modal();
+    })
+
+    $("#btn_submit").click(function(){
+        var username = document.querySelector("#txt_user").value
+        var money = document.querySelector("#txt_money").value
+        console.log(username)
+        console.log(money)
+        window.location.href = "http://13.229.237.142/reducecharge/?username=" + username + "&money=" + money
+    })
+
+
+
+</script>
+{% endblock %}

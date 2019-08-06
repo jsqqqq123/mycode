@@ -1,0 +1,123 @@
+{% load staticfiles %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="../static/js/jquery-3.1.1.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <title>代理后台</title>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+      <a class="navbar-brand" href="#">代理后台</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+
+
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <span class="nav-link">欢迎 {{request.user.username}} 登录</span>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="http://13.229.237.142/admin/password_change/">更改密码</a>
+          <a class="dropdown-item" href="http://13.229.237.142/accounts/logout/">退出登录</a>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="searchinput">
+      <button class="btn btn-outline-success my-2 my-sm-0"  id="searchbutton">Search</button>
+    </form>
+  </div>
+</nav>
+  <div class="row">
+      <div class="col-3  mt-4">
+          <div class="list-group">
+              <button type="button" class="list-group-item list-group-item-action active">
+              </button>
+              <a href="http://13.229.237.142/agent/"><button type="button" class="list-group-item list-group-item-action" id="showagentuser">查看代理用户</button></a>
+              <a href="http://13.229.237.142/getqcorde/"><button type="button" class="list-group-item list-group-item-action">二维码信息</button></a>
+              <button type="button" class="list-group-item list-group-item-action" disabled>Vestibulum at eros</button>
+              {% if is_staff %}
+                  <a href="http://13.229.237.142/getuser/"><button type="button" class="list-group-item list-group-item-action" disabled>用户系统</button></a>
+                  <a href="http://13.229.237.142/charge/"><button type="button" class="list-group-item list-group-item-action" disabled>充值系统</button></a>
+                  <a href="http://13.229.237.142/xiafen/"><button type="button" class="list-group-item list-group-item-action" disabled>下分系统</button></a>
+                  <a href="http://13.229.237.142/robot/"><button type="button" class="list-group-item list-group-item-action" disabled>机器人</button></a>
+                  <a href="http://13.229.237.142/robotset/"><button type="button" class="list-group-item list-group-item-action" disabled>机器人设置</button></a>
+                  <a href="http://13.229.237.142/ubi/"><button type="button" class="list-group-item list-group-item-action" disabled>用户报表</button></a>
+                  <a href="http://13.229.237.142/cbi/"><button type="button" class="list-group-item list-group-item-action" disabled>公司报表</button></a>
+                  <a href="http://13.229.237.142/mysetting/"><button type="button" class="list-group-item list-group-item-action" disabled>后台设置</button></a>
+        
+              {% endif %}
+
+            </div>
+      </div>
+      <!--<div class="col-9 mt-4" id="showbody">-->
+          <!--<table class="table table-hover table-bordered table-striped" id="maintable">-->
+              <!--<thead>-->
+                <!--<tr class="table-primary">-->
+                  <!--<th scope="col">#</th>-->
+                  <!--<th scope="col">用户名</th>-->
+                  <!--<th scope="col">靴数</th>-->
+                  <!--<th scope="col">该靴下注</th>-->
+                  <!--<th scope="col">下注前余额</th>-->
+                  <!--<th scope="col">该靴开牌</th>-->
+                  <!--<th scope="col">下注后余额</th>-->
+                  <!--<th scope="col">时间</th>-->
+                <!--</tr>-->
+              <!--</thead>-->
+              <!--<tbody>-->
+                <!--<tr>-->
+                  <!--<th scope="row">1</th>-->
+                  <!--<td>Mark</td>-->
+                  <!--<td>Otto</td>-->
+                  <!--<td>@mdosdjflkjadflkjdskl</td>-->
+                  <!--<td>Mark</td>-->
+                  <!--<td>Mark</td>-->
+                  <!--<td>Mark</td>-->
+                  <!--<td>Mark</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                  <!--<th scope="row">2</th>-->
+                  <!--<td>Jacob</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>@fat</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                  <!--<th scope="row">3</th>-->
+                  <!--<td colspan="2">Larry the Bird</td>-->
+                  <!--<td>@twitter</td>-->
+                <!--</tr>-->
+              <!--</tbody>-->
+            <!--</table>-->
+      <!--</div>-->
+      {% block content %}
+      {% endblock %}
+
+  </div>
+<script type="text/javascript">
+    $("#searchbutton").click(function(){
+        window.location.href = "http://13.229.237.142/agent/"
+    })
+</script>
+
+</div>
+</body>
+</html>

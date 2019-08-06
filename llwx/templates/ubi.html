@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+      <div class="form-row">
+          <form>
+<!--              <input type="text" class="form-control" id="searchtext" placeholder="2019-01-01">    -->
+<!--              <input class="form-control btn btn-primary" id="searchbt" type="button" value="Search"/> -->
+          </form>
+      </div>
+      <div class="form-row">
+          <table class="table table-hover table-bordered table-striped" id="maintable">
+              <thead>
+                <tr class="table-primary">
+                  <th scope="col">时间</th>
+                  <th scope="col">用户名</th>
+                  <th scope="col">代理别名</th>
+                  <th scope="col">庄闲洗码总分</th>
+                  <th scope="col">三宝洗码总分</th>
+                  <th scope="col">庄闲赢亏总分</th>
+                  <th scope="col">三宝赢亏总分</th>
+                  <th scope="col">有效流水分</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for userbi in userbilist %}
+                <tr>
+                  <!--<th scope="row">1</th>-->
+                  <td>{{userbi.date_time}}</td>
+                  <td>{{userbi.username}}</td>
+                  <td>{{userbi.agent_name}}</td>
+                  <td>{{userbi.zx_xima_total}}</td>
+                  <td>{{userbi.sb_xima_total}}</td>
+                  <td>{{userbi.zx_total}}</td>
+                  <td>{{userbi.sb_total}}</td>
+                  <td>{{userbi.yx_total}}</td>
+                </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+          <div id="pages" class="text-center" >
+            <nav>
+            <ul class="pagination">
+                <li class="step-links">
+                {% if userbilist.has_previous %}
+                    <a class='active' href="?page={{ userbilist.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ userbilist.number }} of {{ userbilist.paginator.num_pages }}</span>
+
+                {% if userbilist.has_next %}
+                    <a class='active' href="?page={{ userbilist.next_page_number }}">下一页</a>
+                {% endif %}
+                </li></ul>
+            </nav>
+          </div>
+      </div>
+      </div>
+<script>
+    document.querySelector("#searchbt").onclick = function(e){
+        var date_time = document.querySelector("#searchtext").value
+        window.location.href = "http://13.229.237.142/ubi/?date_time=" + date_time
+        document.querySelector("#searchtext").value = ""
+    }
+</script>
+{% endblock %}

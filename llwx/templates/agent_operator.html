@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+          <table class="table table-hover table-bordered table-striped" id="maintable">
+              <thead>
+                <tr class="table-primary">
+                  <th scope="col">#</th>
+                  <th scope="col">用户名</th>
+                  <th scope="col">靴数</th>
+                  <th scope="col">下注金额</th>
+                  <th scope="col">下注后余额</th>
+                  <th scope="col">开牌</th>
+                  <th scope="col">开牌后余额</th>
+                  <th scope="col">时间</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for op in oplist %}
+                <tr>
+                  <th scope="row">1</th>
+                  <td>{{op.username}}</td>
+                  <td>{{op.bacc_num}}</td>
+                  <td>{{op.xiazhu}}</td>
+                  <td>{{op.pre_yue}}</td>
+                  <td>{{op.result}}</td>
+                  <td>{{op.after_yue}}</td>
+                  <td>{{op.xiazhu_date}}</td>
+                </tr>
+              {% endfor %}
+                <!--<tr>-->
+                  <!--<th scope="row">2</th>-->
+                  <!--<td>Jacob</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>@fat</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                  <!--<th scope="row">3</th>-->
+                  <!--<td colspan="2">Larry the Bird</td>-->
+                  <!--<td>@twitter</td>-->
+                <!--</tr>-->
+              </tbody>
+            </table>
+        <div id="pages" class="text-center" >
+            <nav>
+            <ul class="pagination">
+                <li class="step-links">
+                {% if oplist.has_previous %}
+                    <a class='active' href="?page={{ oplist.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ oplist.number }} of {{ oplist.paginator.num_pages }}</span>
+
+                {% if oplist.has_next %}
+                    <a class='active' href="?page={{ oplist.next_page_number }}">下一页</a>
+                {% endif %}
+                </li></ul>
+            </nav>
+          </div>
+      </div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+      <div class="form-row">
+          <form>
+              <input type="text" class="form-control" id="searchtext">
+              <input class="form-control btn btn-primary" id="searchbt" type="button" value="Search"/>
+          </form>
+      </div>
+      <div class="form-row">
+          <table class="table table-hover table-bordered table-striped" id="maintable">
+              <thead>
+                <tr class="table-primary">
+                  <th scope="col">#</th>
+                  <th scope="col">用户名</th>
+                  <th scope="col">总充值</th>
+                  <th scope="col">剩余金额</th>
+                  <th scope="col">已取现金额</th>
+                  <th scope="col">最后充值时间</th>
+                  <th scope="col">最后取现时间</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for user in userlist %}
+                <tr>
+                  <th scope="row">1</th>
+                  <td><a href="http://13.229.237.142/oplists/?username={{user.user_id.username}}">{{user.user_id.username}}</a></td>
+                  <td>{{user.total_m}}</td>
+                  <td>{{user.cur_m}}</td>
+                  <td>{{user.get_m}}</td>
+                  <td>{{user.recharge_lasttime}}</td>
+                  <td>{{user.withdraw_lastime}}</td>
+                </tr>
+              {% endfor %}
+                <!--<tr>-->
+                  <!--<th scope="row">2</th>-->
+                  <!--<td>Jacob</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>@fat</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                  <!--<td>Thornton</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                  <!--<th scope="row">3</th>-->
+                  <!--<td colspan="2">Larry the Bird</td>-->
+                  <!--<td>@twitter</td>-->
+                <!--</tr>-->
+              </tbody>
+            </table>
+          <div id="pages" class="text-center" >
+            <nav>
+            <ul class="pagination">
+                <li class="step-links">
+                {% if userlist.has_previous %}
+                    <a class='active' href="?page={{ userlist.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ userlist.number }} of {{ userlist.paginator.num_pages }}</span>
+
+                {% if userlist.has_next %}
+                    <a class='active' href="?page={{ userlist.next_page_number }}">下一页</a>
+                {% endif %}
+                </li></ul>
+            </nav>
+          </div>
+      </div>
+      </div>
+<script>
+    document.querySelector("#searchbt").onclick = function(e){
+        var username = document.querySelector("#searchtext").value
+        window.location.href = "http://13.229.237.142/searchuser/?username=" + username
+        document.querySelector("#searchtext").value = ""
+    }
+</script>
+{% endblock %}

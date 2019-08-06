@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-9 mt-4" id="showbody">
+      <div class="form-row">
+          <form>
+              <input type="text" class="form-control" id="searchtext">
+              <input class="form-control btn btn-primary" id="searchbt" type="button" value="Search"/>
+              <input class="form-control btn btn-primary" id="addrobot" type="button" value="新增机器人"/>
+          </form>
+      </div>
+      <div class="form-row">
+          <table class="table table-hover table-bordered table-striped" id="maintable">
+              <thead>
+                <tr class="table-primary">
+                  <th scope="col">#</th>
+                  <th scope="col">用户名</th>
+                  <th scope="col">昵称</th>
+                  <th scope="col">所属代理</th>
+                  <th scope="col">vip</th>
+                  <th scope="col">是否激活</th>
+                  <th scope="col">是否禁言</th>
+                  <th scope="col">机器人</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for user in userlist %}
+                <tr>
+                  <th scope="row">1</th>
+                  <td><a class="addcharge" href="#">{{user.username}}</a></td>
+                  <td>{{user.nickname}}</td>
+                  <td>{{user.agent_id}}</td>
+                  <td>{{user.is_vip}}</td>
+                  <td>{{user.is_active}}</td>
+                  <td>{{user.is_talke}}</td>
+                  <td>{{user.is_robot}}</td>
+                </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+          <div id="pages" class="text-center" >
+            <nav>
+            <ul class="pagination">
+                <li class="step-links">
+                {% if userlist.has_previous %}
+                    <a class='active' href="?page={{ userlist.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ userlist.number }} of {{ userlist.paginator.num_pages }}</span>
+
+                {% if userlist.has_next %}
+                    <a class='active' href="?page={{ userlist.next_page_number }}">下一页</a>
+                {% endif %}
+                </li></ul>
+            </nav>
+          </div>
+      </div>
+      </div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新增机器人用户</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="txt_user">用户名</label>
+                        <input type="text" name="txt_user" class="form-control" id="txt_user">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_nickname">昵称</label>
+                        <input type="text" name="txt_user" class="form-control" id="txt_nickname">
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label for="txt_passwd">密码</label>-->
+                        <!--<input type="text" name="txt_money" class="form-control" id="txt_passwd" placeholder="密码">-->
+                    <!--</div>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>取消</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade" id="myModal01" tabindex="-1" role="dialog" aria-labelledby="myModalLabel01">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel01">新增</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="txt_user01">用户名</label>
+                        <input type="text" name="txt_user" class="form-control" id="txt_user01" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_money">充值金额</label>
+                        <input type="text" name="txt_money" class="form-control" id="txt_money" placeholder="充值金额">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>取消</button>
+                    <button type="button" id="btn_submit01" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    document.querySelector("#searchbt").onclick = function(e){
+        var username = document.querySelector("#searchtext").value
+        window.location.href = "http://92.168.1.200/getuser/?username=" + username
+        document.querySelector("#searchtext").value = ""
+    }
+
+    $("#addrobot").click(function(){
+        $("#myModalLabel").text("新增机器人用户");
+        var username = $(this).text()
+        $("#txt_user").val(username)
+        $("#myModal").modal();
+    })
+
+    $("#btn_submit").click(function(){
+        var username = document.querySelector("#txt_user").value
+        var nickname = document.querySelector("#txt_nickname").value
+        window.location.href = "http://13.229.237.142/addrobot/?username=" + username + "&nickname=" + nickname
+    })
+
+    $(".addcharge").click(function(){
+        $("#myModalLabel01").text("充值");
+        var username01 = $(this).text()
+        $("#txt_user01").val(username01)
+        $("#myModal01").modal();
+    })
+
+    $("#btn_submit01").click(function(){
+        var username01 = document.querySelector("#txt_user01").value
+        var money = document.querySelector("#txt_money").value
+        window.location.href = "http://13.229.237.142/addcharge/?username=" + username01 + "&money=" + money
+    })
+
+
+
+</script>
+{% endblock %}

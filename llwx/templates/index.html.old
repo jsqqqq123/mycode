@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div >
+    <table>
+        <tr>
+            <td><button type="button" id="btn1" value="btn_1">准备开始</button></td>
+        </tr>
+        <tr>
+            <td><button type="button" id="btn2" value="btn_2">准备开始</button></td>
+        </tr>
+    </table>
+</div>
+<script>
+
+    $("button").click(function() {
+        var request_id = $(this).val();
+        $.ajax({
+            url: '/autowechat/index_2',
+            type: 'POST',
+            data: {'request_id': request_id},
+            success: function(arg){
+                var my_pid = jQuery.parseJSON(arg)
+
+                layer.open({
+                    title: my_pid[request_id] + '.png',
+                    type: 1,
+                    area: ['460px', '500px'],
+                    shadeClose: true,
+                    content: '<div style="padding:20px;"><img src="../static/img/' + my_pid[request_id] + '.png"' + '></div>'
+                });
+
+                $(this).text('正在运行');
+                $(this).attr('disabled', true);
+            },
+            error: function(arg){
+                alert('shit is error' + arg)
+            },
+        });
+    });
+
+
+</script>
+{% endblock %}
+

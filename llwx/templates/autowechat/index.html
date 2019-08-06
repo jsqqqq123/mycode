@@ -1,0 +1,80 @@
+{% load staticfiles %}
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <link rel="icon" href="../../static/img/favicon.ico">
+
+      <title>微信操作平台</title>
+      <link rel="stylesheet" href="../../static/css/bootstrap.min.css" >
+      <link rel="stylesheet" href="../../static/css/style.css">
+
+      <!-- Custom styles for this template -->
+      <script src="../../static/js/jquery-3.1.1.js"></script>
+      <script src="../../static/js/popper.min.js"></script>
+      <script src="../../static/js/layer/layer.js"></script>
+      <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  </head>
+  <body>
+      <nav class="navbar fixed-top navbar-dark bg-dark">
+          <div class="container">
+              <a href="#" class="navbar-brand"><strong>51grb.cn</strong></a>
+              <ul class="nav">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#">Active</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+              </ul>
+          </div>
+      </nav>
+     <div class="container" id="slider_left">
+          <div id="main_div">
+            {% for btn_name in chat_enable_list  %}
+              <button id={{ btn_name }} class="wechatbtn" value={{ btn_name }}>{{ btn_name }}</button>
+              <br />
+              <br />
+            {% endfor %}
+          </div>
+
+    </div>
+    <script>
+
+        $("button").click(function() {
+            var request_id = $(this).val();
+            $.ajax({
+                url: '/autowechat/index_2',
+                type: 'POST',
+                data: {'request_id': request_id},
+                success: function(arg){
+                    var my_pid = jQuery.parseJSON(arg)
+
+                    layer.open({
+                        title: my_pid[request_id] + '.png',
+                        type: 1,
+                        area: ['460px', '500px'],
+                        shadeClose: true,
+                        content: '<div style="padding:20px;"><img src="../../static/img/' + my_pid[request_id] + '.png"' + '></div>'
+                    });
+                },
+                error: function(arg){
+                    alert('shit is error' + arg)
+                },
+            });
+
+            $(this).text('正在运行');
+            $(this).attr('disabled', true);
+
+        });
+
+
+    </script>
+</body></html>
+
