@@ -92,3 +92,19 @@ ps: 运行好后, 切勿在用docker run 来登录验证 以为那会重启再�
 
 ps: centos 更改docker daemon 的路径是 /usr/lib/systemd/system/docker.service中的ExecStart  ubantu 是 /etc/default/docker
 
+
+## docker 命令解析
+
+docker 运行镜像的命令
+```
+docker run --name somenginx02 --restart=always -v /opt/html:/usr/share/nginx/html -p 8181:80 -d nginx
+
+--restart=always : 表示自动重启
+-d nginx： 这里的nginx是要实在存在的镜像的名字 也可以用nginx:laste 来区分不同版本的nginx镜像
+--name somenginx02 ： somenginx02 表示这个docker 启动的应用的标识 这个可以随意取，不过一般根据实际应用来取名字
+```
+
+docker 取消 --restart=always的办法
+```
+docker update --restart=no [container]
+```
